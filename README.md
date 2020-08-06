@@ -1,0 +1,1 @@
+Micro serviço construido para realizar o envio de sms com a plataforma da Zenvia
