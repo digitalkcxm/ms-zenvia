@@ -40,6 +40,20 @@ class ProtocolModel {
     }
   }
 
+  async getPhoneByProtocol(id_protocol){
+    try {
+
+      const phone = await database('protocol').select('phone')
+      .innerJoin('contact', 'protocol.id_contact', 'contact.id')
+      .where({ 'protocol.id' : id_protocol})
+
+      return phone
+    } catch (error) {
+      console.log('ERRO AO BUSCAR POR TELEFONE => MODEL =>', error)
+      return {error : 'Ocorreu um erro ao recuperar o telefone do contato.'}
+    }
+  }
+
   async close(id) {
     try {
       const closedProtocol = await database('protocol').update({ closed: true }).where({ id })

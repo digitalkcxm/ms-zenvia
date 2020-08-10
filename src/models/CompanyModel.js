@@ -18,7 +18,7 @@ class CompanyModel{
 
       const companies = await database('company').where({ id })
 
-      return companies[0]
+      return companies
     } catch (error) {
       console.log('ERRO AO BUSCAR POR ID => MODEL =>', error)
       return {error : 'Ocorreu um erro ao recuperar a companie.'}

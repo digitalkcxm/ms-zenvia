@@ -13,22 +13,22 @@ const messageModel = new MessageModel()
 class ProtocolController {
 
   async createProtocol(req, res) {
-    console.log('VAI CRIAR O PROTOCOLO')
     req.assert('to', 'A propriedade to é obrigatória.').notEmpty()
     req.assert('msg', 'A propriedade msg é obrigatória.').notEmpty()
     req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
 
     try {
       const company = await companyModel.getByToken(req.headers.authorization)
+
+      if(!company[0].activated)
+       return res.status(400).send({ error: 'A company está desativada.' })
+
       if (company[0].id) {
         const contact = await contactModel.createContact(req.body.to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
         const result = await zenviaService.sendMessage(company[0], req.body.to, false, req.body.msg, false)
-        console.log('RESULTADO CONTROLLER ==>>', result.data)
-
-        console.log('CONTACT ==>>', contact)
 
         const protocol = await protocolModel.create(company[0].id, contact)
         if (protocol.error)
@@ -38,7 +38,7 @@ class ProtocolController {
 
         let message = null
         if (result) {
-           message = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company',)
+           message = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company')
         }
 
         if (message) {

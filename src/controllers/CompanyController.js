@@ -37,10 +37,10 @@ class CompanyController {
       if (company.error)
         return res.status(400).send({ error: company.error })
 
-      company.created_at = moment(company.created_at).format('DD/MM/YYYY HH:mm')
-      company.updated_at = moment(company.updated_at).format('DD/MM/YYYY HH:mm')
+      company[0].created_at = moment(company[0].created_at).format('DD/MM/YYYY HH:mm')
+      company[0].updated_at = moment(company[0].updated_at).format('DD/MM/YYYY HH:mm')
 
-      return res.status(200).send(company)
+      return res.status(200).send(company[0])
     } catch (error) {
       console.log('ERRO AO BUSCAR COMPANY => CONTROLLER =>', error)
       return res.status(400).send({ error: "Ocorreu um erro na seleção da company." })
@@ -48,7 +48,6 @@ class CompanyController {
   }
 
   async create(req, res) {
-
     req.assert('name', 'A propriedade name é obrigatória.').notEmpty()
     req.assert('callback', 'A propriedade callback é obrigatória.').notEmpty()
 
@@ -67,10 +66,9 @@ class CompanyController {
       obj.created_at = date
       obj.updated_at = date
 
-      const nameCompanyExists = await this._getByName(obj.name)
-
-      if(nameCompanyExists.error)
-        return res.status(400).send({error : nameCompanyExists.error})
+      const nameAlreadyExists = await companyModel.getByName(obj.name)
+      if (nameAlreadyExists[0])
+        return res.status(400).send({ error: 'Já existe uma company com este nome' })
 
       const companyCreated = await companyModel.create(obj)
 
@@ -80,7 +78,6 @@ class CompanyController {
       companyCreated[0].created_at = moment(companyCreated[0].created_at).format('DD/MM/YYYY HH:mm')
 
       return res.status(200).send(companyCreated[0])
-
     } catch (error) {
       console.log('ERRO AO CRIAR COMPANY => CONTROLLER =>', error)
       return res.status(400).send({ error: "Ocorreu um erro ao criar a company." })
@@ -88,6 +85,13 @@ class CompanyController {
   }
 
   async update(req, res) {
+
+    req.assert('id', 'O parametro de query id é obrigatório').notEmpty()
+
+    if (req.validationErrors())
+      return res.status(400).send({ error: req.validationErrors() })
+
+
     try {
 
       const obj = {}
@@ -98,12 +102,11 @@ class CompanyController {
       typeof req.body.activated == 'boolean' ? obj.activated = req.body.activated : ''
       obj.updated_at = date
 
-      const nameCompanyExists = await this._getByName(obj.name)
+      const nameAlreadyExists = await companyModel.getByName(obj.name)
+      if (nameAlreadyExists[0] && nameAlreadyExists[0].id != req.body.id)
+        return res.status(400).send({ error: 'Já existe uma company com este nome' })
 
-      if(nameCompanyExists.error)
-        return res.status(400).send({error : nameCompanyExists.error})
-
-      let updatedCompany = await companyModel.update(req.params.id, obj)
+      let updatedCompany = await companyModel.update(req.body.id, obj)
 
       if (updatedCompany.error)
         return res.status(400).send({ error: updatedCompany.error })
@@ -114,21 +117,6 @@ class CompanyController {
     } catch (error) {
       console.log('ERRO AO ATUALIZAR COMPANY => CONTROLLER =>', error)
       return res.status(400).send({ error: "Ocorreu um erro ao atualizar a company." })
-    }
-  }
-
-  async _getByName(name) {
-    try {
-
-      const nameAlreadyExists = await companyModel.getByName(name)
-
-      if (nameAlreadyExists)
-        return { error: 'Já existe uma company com este nome' }
-
-      return
-    } catch (error) {
-      console.log('ERRO AO BUSCAR O NOME DE UMA COMPANY => CONTROLLER =>', error)
-      return res.status(400).send({ error: "Ocorreu um erro ao buscar os nomes da company." })
     }
   }
 }
