@@ -5,7 +5,7 @@ class CompanyModel{
   async getAll(){
     try {
       const allCompanies = await database('company').orderBy('created_at', 'asc')
-            
+
       return allCompanies
     } catch (error) {
       console.log('ERRO AO BUSCAR TODAS COMPANIES => MODEL =>', error)
@@ -15,7 +15,7 @@ class CompanyModel{
 
   async getById(id){
     try {
-      
+
       const companies = await database('company').where({ id })
 
       return companies[0]
@@ -41,7 +41,7 @@ class CompanyModel{
 
   async getByName(name){
     try {
-      
+
       const nameSearch = await database('company').returning(['name']).whereRaw(`LOWER(\"name\") = '${name.toLowerCase()}'`)
 
       return nameSearch

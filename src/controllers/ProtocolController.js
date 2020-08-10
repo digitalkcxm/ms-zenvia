@@ -8,13 +8,13 @@ const contactModel = new ContactModel()
 
 class ProtocolController{
 
-  async createProtocol(req, res){ 
+  async createProtocol(req, res){
     req.assert('to', 'A propriedade to é obrigatória.').notEmpty()
     req.assert('msg', 'A propriedade msg é obrigatória.').notEmpty()
     req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
 
     const company = await companyModel.getByToken(req.headers.authorization)
-    if(company[0].id){   
+    if(company[0].id){
       const contact = await contactModel.createContact(req.body.to)
       if(contact.error)
         return res.status(400).send({error : contact.error})
@@ -26,14 +26,14 @@ class ProtocolController{
   }
 
   async closeProtocol(req,res){
-    
+
     req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
     req.assert('id_protocol', 'O id_protocol é obrigatório.').notEmpty()
-    
+
     try {
       const id = parseInt(req.body.id_protocol)
 
-      const closedProtocol = await protocolModel.getById(id) 
+      const closedProtocol = await protocolModel.getById(id)
 
       if(closedProtocol.error)
       return res.status(400).send({message : closedProtocol.error})
@@ -46,7 +46,7 @@ class ProtocolController{
       return res.status(200).send({message : 'O protocolo foi fechado.'})
 
     } catch (error) {
-      
+
     }
   }
 

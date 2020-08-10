@@ -11,5 +11,5 @@ exports.up = knex => knex.schema.createTable('status_message', table =>{
 })
 
 exports.down = function(knex, Promise) {
-  
+
 };
