@@ -26,6 +26,31 @@ class CompanyModel{
 
   }
 
+  async getByToken(token){
+    try {
+
+      const companies = await database('company').where({token_company : token})
+
+      return companies
+
+    } catch (error) {
+      console.log('ERRO AO BUSCAR POR TOKEN => MODEL =>', error)
+      return {error : 'Ocorreu um erro ao recuperar a companie.'}
+    }
+  }
+
+  async getByName(name){
+    try {
+      
+      const nameSearch = await database('company').returning(['name']).whereRaw(`LOWER(\"name\") = '${name.toLowerCase()}'`)
+
+      return nameSearch
+    } catch (error) {
+      console.log('ERRO AO BUSCAR POR NOME => MODEL =>', error)
+      return {error : 'Ocorreu um erro ao recuperar o nome da company.'}
+    }
+  }
+
   async create(obj){
     try {
       const companyCreated = await database('company').returning(['id', 'name', 'callback', 'token_company', 'activated', 'created_at' ]).insert( obj )

@@ -19,7 +19,7 @@ class CompanyController {
         company.updated_at = moment(company.updated_at).format('DD/MM/YYYY HH:mm')
       })
 
-      return res.status(200).send({ companies: allCompanies })
+      return res.status(200).send(allCompanies)
     } catch (error) {
       console.log('ERRO AO BUSCAR COMPANIES => CONTROLLER =>', error)
       return res.status(400).send({ error: "Ocorreu um erro na seleção das companies." })
@@ -29,7 +29,7 @@ class CompanyController {
   async getById(req, res) {
     try {
 
-      if(!req.params.id || !Number(req.params.id)) 
+      if (!req.params.id || !Number(req.params.id))
         return res.status(400).send({ error: 'Informe um id númerico para a busca' })
 
       const company = await companyModel.getById(req.params.id)
@@ -52,20 +52,26 @@ class CompanyController {
     req.assert('name', 'A propriedade name é obrigatória.').notEmpty()
     req.assert('callback', 'A propriedade callback é obrigatória.').notEmpty()
 
-    if(req.validationErrors())
+    if (req.validationErrors())
       return res.status(400).send({ error: req.validationErrors() })
 
     try {
 
       const obj = {}
-      const date = moment().format()
+      const date = moment().format('DD/MM/YYYY HH:mm')
 
       obj.name = req.body.name
       obj.callback = req.body.callback
       let tokenHash = obj.name + date
-      obj.token_company = hash({ foo: tokenHash})
+      obj.token_company = hash({ foo: tokenHash })
       obj.created_at = date
       obj.updated_at = date
+
+      const nameCompanyExists = await this._getByName(obj.name)
+
+      if(nameCompanyExists.error)
+        return res.status(400).send({error : nameCompanyExists.error})
+
       const companyCreated = await companyModel.create(obj)
 
       if (companyCreated.error)
@@ -81,16 +87,21 @@ class CompanyController {
     }
   }
 
-  async update(req,res){
+  async update(req, res) {
     try {
-      
+
       const obj = {}
       const date = moment().format('DD/MM/YYYY HH:mm')
-      
+
       req.body.name ? obj.name = req.body.name : ''
       req.body.callback ? obj.callback = req.body.callback : ''
       typeof req.body.activated == 'boolean' ? obj.activated = req.body.activated : ''
       obj.updated_at = date
+
+      const nameCompanyExists = await this._getByName(obj.name)
+
+      if(nameCompanyExists.error)
+        return res.status(400).send({error : nameCompanyExists.error})
 
       let updatedCompany = await companyModel.update(req.params.id, obj)
 
@@ -106,6 +117,20 @@ class CompanyController {
     }
   }
 
+  async _getByName(name) {
+    try {
+
+      const nameAlreadyExists = await companyModel.getByName(name)
+
+      if (nameAlreadyExists)
+        return { error: 'Já existe uma company com este nome' }
+
+      return
+    } catch (error) {
+      console.log('ERRO AO BUSCAR O NOME DE UMA COMPANY => CONTROLLER =>', error)
+      return res.status(400).send({ error: "Ocorreu um erro ao buscar os nomes da company." })
+    }
+  }
 }
 
 module.exports = CompanyController
