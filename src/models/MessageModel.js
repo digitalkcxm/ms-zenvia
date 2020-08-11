@@ -1,5 +1,6 @@
 const moment = require('moment')
 const database = require('../config/database/database')
+const { where } = require('../config/database/database')
 
 class MessageModel {
 
@@ -19,6 +20,21 @@ class MessageModel {
       return { error: 'Erro ao criar a mensage' }
     } catch (error) {
       console.log('ERRO AO CRIAR A MENSAGEM ==>> MODEL ==>>', error)
+      return { error: 'Erro ao criar a mensage' }
+    }
+  }
+
+  async getMessagesWithoutReceived(){
+    try {
+
+      const messages = await database('message').select('message.id')
+      .leftJoin('status_message', 'message.id', 'status_message.id_message')
+      .whereNull('status_message.received')
+      .whereNotNull('status_message.id_message')
+
+      return messages
+    } catch (error) {
+      console.log('ERRO AO CRIAR AO BUSCAR MENSAGENS SEM RECEIVED ==>> MODEL ==>>', error)
       return { error: 'Erro ao criar a mensage' }
     }
   }

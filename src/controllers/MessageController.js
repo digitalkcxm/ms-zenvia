@@ -33,7 +33,7 @@ class MessageController {
 
       const companyProtocol = await companyModel.getById(protocol[0].id_company)
 
-      if(companyToken[0].id != companyProtocol[0].id)
+      if (companyToken[0].id != companyProtocol[0].id)
         return res.status(400).send({ error: 'A company atual não é a responsável por este protocolo' })
 
       if (!companyToken[0].activated)
@@ -63,6 +63,28 @@ class MessageController {
 
   }
 
+  async getZenviaStatus() {
+    try {
+
+      const allMessagesWithoutReceived = await messageModel.getMessagesWithoutReceived()
+
+      if (allMessagesWithoutReceived.error)
+        return res.status(400).send({ error: allMessagesWithoutReceived.error })
+
+      let zenviaData, statusUpdate
+      allMessagesWithoutReceived.map(async (message) => {
+        zenviaData = await zenviaService.getStatusById(message.id)
+        if (zenviaData.error)
+          return
+        statusUpdate = await statusMessageModel.update(zenviaData, message.id)
+        if (statusUpdate.error)
+          return
+      })
+
+    } catch (error) {
+      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> CONTROLLER ==>>', error)
+    }
+  }
 }
 
 module.exports = MessageController

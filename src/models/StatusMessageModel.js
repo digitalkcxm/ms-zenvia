@@ -23,6 +23,30 @@ class StatusMessageModel {
     }
   }
 
+  async update(obj, id_message){
+    try {
+      const status = {}
+      console.log('DATA ANTES DE TRANSFORMAR ==>>', obj.received)
+
+      status.received           = moment(obj.received).format()
+      console.log('DATA DEPOIS DE TRANSFORMAR ==>>', status.received)
+
+      status.status_code        = obj.statusCode
+      status.status_description = obj.statusDescription
+      status.detail_code        = obj.detailCode
+      status.detail_description = obj.detailDescription
+      status.updated_at         = moment().format()
+
+      const result = await database('status_message').returning(['id'])
+      .update(status).where({ id_message })
+
+      return result
+    } catch (error) {
+      console.log('ERRO AO ATUALIZAR STATUS DA MENSAGEM => MODEL =>', error)
+      return { error: 'Ocorreu um erro ao tentar atualizar os status da mensagem.' }
+    }
+  }
+
 }
 
 module.exports = StatusMessageModel
