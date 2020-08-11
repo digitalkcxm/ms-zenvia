@@ -44,14 +44,13 @@ class MessageController {
       if (resultZenviaSend)
         message = await messageModel.create(protocol[0].id, company[0].name, schedule, msg, 'Company')
 
-
       if (message)
         return res.status(200).send({send: true})
 
       return res.status(200).send({ message: 'Erro ao enviar a mensagem.' })
     } catch (error) {
       console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error)
-      return res.send(400).send('Erro ao enviar a mensagem.')
+      return res.status(400).send('Erro ao enviar a mensagem.')
     }
 
   }

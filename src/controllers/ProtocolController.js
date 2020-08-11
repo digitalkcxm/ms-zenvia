@@ -3,12 +3,14 @@ const CompanyModel = require('../models/CompanyModel')
 const ContactModel = require('../models/ContactModel')
 const ZenviaService = require('../services/ZenviaService')
 const MessageModel = require('../models/MessageModel')
+const StatusMessageModel = require('../models/StatusMessageModel')
 
 const protocolModel = new ProtocolModel()
 const companyModel = new CompanyModel()
 const contactModel = new ContactModel()
 const zenviaService = new ZenviaService()
 const messageModel = new MessageModel()
+const statusMessageModel = new StatusMessageModel()
 
 class ProtocolController {
 
@@ -20,39 +22,38 @@ class ProtocolController {
     try {
       const company = await companyModel.getByToken(req.headers.authorization)
 
-      if(!company[0].activated)
-       return res.status(400).send({ error: 'A company está desativada.' })
+      if (!company[0].activated)
+        return res.status(400).send({ error: 'A company está desativada.' })
 
       if (company[0].id) {
-        const contact = await contactModel.createContact(req.body.to)
+        let { schedule, msg, to } = req.body
+
+        const contact = await contactModel.createContact(to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
-
-        const result = await zenviaService.sendMessage(company[0], req.body.to, false, req.body.msg, false)
 
         const protocol = await protocolModel.create(company[0].id, contact)
         if (protocol.error)
           return res.status(400).send({ error: contact.error })
 
-        let { schedule, msg } = req.body
+        const messageId = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company')
+        if (messageId.error)
+          return res.status(400).send({ error: messageId.error })
 
-        let message = null
-        if (result) {
-           message = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company')
-        }
+        const resultSend = await zenviaService.sendMessage(company[0].name, to, false, msg, false, messageId)
+        if (resultSend.error)
+          return res.status(400).send({ error: contact.error })
 
-        if (message) {
-          return res.status(200).send({
-            protocol: protocol.id_protocol
-          })
-        }
+        const statusMessage = await statusMessageModel.create(resultSend.data, messageId)
+        if (statusMessage.error)
+          return res.status(400).send({ error: statusMessage.error })
 
-        return res.status(200).send(protocol)
+        return res.status(200).send({ id_protocol: protocol.id_protocol })
       }
       return res.status(200).send({ error: 'A company não existe' })
     } catch (error) {
       console.log('ERRO AO CRIAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.send(400).send('Erro ao criar o protocolo.')
+      return res.status(400).send('Erro ao criar o protocolo.')
     }
   }
 
@@ -67,17 +68,20 @@ class ProtocolController {
       const closedProtocol = await protocolModel.getById(id)
 
       if (closedProtocol.error)
-        return res.status(400).send({ message: closedProtocol.error })
+        return res.status(400).send({ error: closedProtocol.error })
 
       if (closedProtocol[0].closed)
         return res.status(400).send({ message: 'O protolo já se encontra fechado.' })
 
       const protocolWillBeClosed = await protocolModel.close(closedProtocol[0].id)
+      if (protocolWillBeClosed.error)
+        return res.status(400).send({ error: protocolWillBeClosed.error })
 
       return res.status(200).send({ message: 'O protocolo foi fechado.' })
 
     } catch (error) {
-
+      console.log('ERRO AO FECHAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
+      return res.status(400).send('Erro ao fechar o protocolo.')
     }
   }
 }

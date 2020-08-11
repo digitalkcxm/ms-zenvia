@@ -4,7 +4,7 @@ const moment = require('moment')
 
 class ZenviaService {
 
-  async sendMessage(from, to, schedule = null, msg, flashSms = false) {
+  async sendMessage(from, to, schedule = null, msg, flashSms = false, msgId) {
     try {
       const instance = await this._istance()
 
@@ -16,13 +16,14 @@ class ZenviaService {
           from: from.name,
           to: to,
           msg: msg,
-          flashSms: flashSms
+          flashSms: flashSms,
+          id: msgId
         }
       })
       return result
     } catch (error) {
       console.log('ERRO AO ENVIAR A MENSAGEM ==>> ZENVIA SERVICE ==>>', error)
-      return error
+      return { error: error }
     }
   }
 
