@@ -56,7 +56,7 @@ class ProtocolController {
       return res.status(200).send({ error: 'A company não existe' })
     } catch (error) {
       console.log('ERRO AO CRIAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(400).send('Erro ao criar o protocolo.')
+      return res.status(400).send({ error : 'Erro ao criar o protocolo.'})
     }
   }
 
@@ -74,7 +74,7 @@ class ProtocolController {
         return res.status(400).send({ error: closedProtocol.error })
 
       if (closedProtocol[0].closed)
-        return res.status(400).send({ message: 'O protolo já se encontra fechado.' })
+        return res.status(400).send({ error: 'O protolo já se encontra fechado.' })
 
       const protocolWillBeClosed = await protocolModel.close(closedProtocol[0].id)
       if (protocolWillBeClosed.error)
@@ -84,7 +84,7 @@ class ProtocolController {
 
     } catch (error) {
       console.log('ERRO AO FECHAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(400).send('Erro ao fechar o protocolo.')
+      return res.status(400).send({ error : 'Erro ao fechar o protocolo.'})
     }
   }
 }

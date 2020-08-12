@@ -39,18 +39,44 @@ class ProtocolModel {
       return { error: 'Ocorreu um erro ao buscar o protocolo.' }
     }
   }
-
-  async getPhoneByProtocol(id_protocol){
+  async getPhoneByProtocol(id_protocol) {
     try {
 
       const phone = await database('protocol').select('phone')
-      .innerJoin('contact', 'protocol.id_contact', 'contact.id')
-      .where({ 'protocol.id' : id_protocol})
+        .innerJoin('contact', 'protocol.id_contact', 'contact.id')
+        .where({ 'protocol.id': id_protocol })
 
       return phone
     } catch (error) {
       console.log('ERRO AO BUSCAR POR TELEFONE => MODEL =>', error)
-      return {error : 'Ocorreu um erro ao recuperar o telefone do contato.'}
+      return { error: 'Ocorreu um erro ao recuperar o telefone do contato.' }
+    }
+  }
+
+  async getProtocolByPhone(phone) {
+    try {
+      const protocol = await database('protocol').select('*')
+        .innerJoin('contact', 'protocol.id_contact', 'contact.id')
+        .where({
+          'contact.phone': phone,
+          'protocol.closed': false
+        })
+      return protocol
+    } catch (error) {
+
+    }
+  }
+
+  async getCompany(protocol){
+    try {
+      const company = await database('protocol').select('*')
+      .innerJoin('company', 'protocol.id_company', 'company.id')
+      .where({
+        'protocol.id' : protocol
+      })
+      return company
+    } catch (error) {
+
     }
   }
 

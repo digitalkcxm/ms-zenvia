@@ -19,7 +19,7 @@ class MessageController {
     req.assert('id_protocol', 'A propriedade to é obrigatória.').notEmpty()
 
     if (req.validationErrors())
-      return res.status(400).send({ errors: req.validationErrors() })
+      return res.status(400).send({ error: req.validationErrors() })
 
     try {
       const { msg, schedule } = req.body
@@ -62,7 +62,7 @@ class MessageController {
       return res.status(200).send({ send: true })
     } catch (error) {
       console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error)
-      return res.status(400).send('Erro ao enviar a mensagem.')
+      return res.status(400).send({ error : 'Erro ao enviar a mensagem.'})
     }
 
   }
@@ -87,6 +87,26 @@ class MessageController {
 
     } catch (error) {
       console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> CONTROLLER ==>>', error)
+    }
+  }
+
+  async getNewMessages() {
+    try {
+      const messages = await zenviaService.getNewMessages()
+      let protocol,company
+
+      messages.map(async (msg) =>{
+        console.log('MENSAGENS ==>>', msg)
+
+        protocol = await protocolModel.getProtocolByPhone(msg.mobile)
+        console.log('ESSE VAI SER O PROTOCOLO', protocol[0].id)
+        company = await protocolModel.getCompany(protocol[0].id)
+        console.log('ESSA COMPANY VAI RECEBER', company[0].id)
+        messageModel.insertReply(protocol[0].id, company[0].id, msg)
+      })
+
+    } catch (error) {
+      console.log('ERRO AO BUSCAR NOVOS SMS NA ZENVIA ==>> CONTROLLER ==>>', error)
     }
   }
 }

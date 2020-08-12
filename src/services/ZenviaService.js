@@ -6,7 +6,7 @@ class ZenviaService {
 
   async sendMessage(from, to, schedule = null, msg, flashSms = false, msgId) {
     try {
-      const instance = await this._istanceSendMessage()
+      const instance = await this._istance()
 
       if (instance.error)
         return instance.error
@@ -41,7 +41,34 @@ class ZenviaService {
     }
   }
 
-  _istanceSendMessage() {
+  async getNewMessages() {
+    try {
+      let startDate = moment().subtract("5", "days").format('YYYY/MM/DD HH:mm:ss')
+      startDate = startDate.replace(' ', 'T')
+      startDate = startDate.replace('/', '-')
+      startDate = startDate.replace('/', '-')
+
+      let actualDate = moment().format('YYYY/MM/DD HH:mm:ss')
+      actualDate = actualDate.replace(' ', 'T')
+      actualDate = actualDate.replace('/', '-')
+      actualDate = actualDate.replace('/', '-')
+
+      const instance = await this._istance()
+      if (instance.error)
+        return instance.error
+
+      const resultNewMessages = await instance.get(`/received/search/${startDate}/${actualDate}`)
+
+      const allMessages = resultNewMessages.data.receivedResponse.receivedMessages
+      return allMessages
+    } catch (error) {
+      console.log('ERRO AO BUSCAR NOVAS MENSAGENS ==>> ZENVIA SERVICE ==>>', error)
+      return { error: error }
+    }
+  }
+
+
+  _istance() {
     try {
       return axios.create({
         baseURL: process.env.BASE_ZENVIA,
