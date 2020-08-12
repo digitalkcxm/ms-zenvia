@@ -53,7 +53,9 @@ class CompanyModel{
 
   async create(obj){
     try {
-      const companyCreated = await database('company').returning(['id', 'name', 'callback', 'token_company', 'activated', 'created_at' ]).insert( obj )
+      const companyCreated = await database('company')
+      .returning(['id', 'name', 'callback', 'token_company', 'activated', 'created_at' ])
+      .insert( obj )
       return companyCreated
     } catch (error) {
       console.log('ERRO AO CRIAR COMPANY => MODEL =>', error)

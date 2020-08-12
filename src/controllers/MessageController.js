@@ -23,9 +23,13 @@ class MessageController {
 
     try {
       const { msg, schedule } = req.body
+
       const companyToken = await companyModel.getByToken(req.headers.authorization)
       if (companyToken.error)
         return res.status(400).send({ error: companyToken.error })
+
+      if ((msg.length + companyToken[0].name.length) > 159)
+        return res.status(400).send({ error: `A mensagem ultrapassa o limite, ${companyToken[0].name}, junto da mensagem ultrapassa 160 caracteres.` })
 
       const protocol = await protocolModel.getById(req.body.id_protocol)
       if (protocol.error)
@@ -47,7 +51,7 @@ class MessageController {
       if (messageId.error)
         return res.status(400).send({ error: messageId.error })
 
-      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, false, msg, false, messageId)
+      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0].name, phoneContact[0].phone, false, msg, false, messageId)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
 

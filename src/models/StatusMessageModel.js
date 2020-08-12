@@ -3,16 +3,16 @@ const database = require('../config/database/database')
 
 class StatusMessageModel {
 
-  async create(obj, idMessage){
+  async create(obj, idMessage) {
     try {
       const status = {}
       status.status_code        = obj.sendSmsResponse.statusCode
       status.status_description = obj.sendSmsResponse.statusDescription
       status.detail_code        = obj.sendSmsResponse.detailCode
       status.detail_description = obj.sendSmsResponse.detailDescription
-      status.id_message = idMessage
-      status.created_at = moment().format('DD/MM/YYYY HH:mm')
-      status.updated_at = moment().format('DD/MM/YYYY HH:mm')
+      status.id_message         = idMessage
+      status.created_at         = moment().format()
+      status.updated_at         = moment().format()
 
       const result = await database('status_message').returning('*').insert(status)
 
@@ -23,14 +23,15 @@ class StatusMessageModel {
     }
   }
 
-  async update(obj, id_message){
+  async update(obj, id_message) {
     try {
       const status = {}
-      console.log('DATA ANTES DE TRANSFORMAR ==>>', obj.received)
 
-      status.received           = moment(obj.received).format()
-      console.log('DATA DEPOIS DE TRANSFORMAR ==>>', status.received)
-
+      if (obj.received != null) {
+        status.received = moment(obj.received).format()
+      }else{
+        status.received = null
+      }
       status.status_code        = obj.statusCode
       status.status_description = obj.statusDescription
       status.detail_code        = obj.detailCode
@@ -38,7 +39,7 @@ class StatusMessageModel {
       status.updated_at         = moment().format()
 
       const result = await database('status_message').returning(['id'])
-      .update(status).where({ id_message })
+        .update(status).where({ id_message })
 
       return result
     } catch (error) {

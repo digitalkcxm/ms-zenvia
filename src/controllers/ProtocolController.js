@@ -28,6 +28,9 @@ class ProtocolController {
       if (company[0].id) {
         let { schedule, msg, to } = req.body
 
+        if ((msg.length + company[0].name.length) > 159)
+          return res.status(400).send({ error: `A mensagem ultrapassa o limite, ${companyToken[0].name}, junto da mensagem ultrapassa 160 caracteres.` })
+
         const contact = await contactModel.createContact(to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })

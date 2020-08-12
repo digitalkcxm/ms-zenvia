@@ -57,7 +57,7 @@ class CompanyController {
     try {
 
       const obj = {}
-      const date = moment().format('DD/MM/YYYY HH:mm')
+      const date = moment().format()
 
       obj.name = req.body.name
       obj.callback = req.body.callback
@@ -95,7 +95,7 @@ class CompanyController {
     try {
 
       const obj = {}
-      const date = moment().format('DD/MM/YYYY HH:mm')
+      const date = moment().format()
 
       req.body.name ? obj.name = req.body.name : ''
       req.body.callback ? obj.callback = req.body.callback : ''

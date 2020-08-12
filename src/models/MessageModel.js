@@ -11,7 +11,7 @@ class MessageModel {
       const result = await database('message').returning(['id']).insert({
         id_protocol, from, schedule, msg,
         source, mobile, mobile_operator_name, callback_option,
-        flash_sms, created_at: moment().format('DD/MM/YYYY HH:mm'), updated_at: moment().format('DD/MM/YYYY HH:mm')
+        flash_sms, created_at: moment().format(), updated_at: moment().format()
       })
 
       if (result)
