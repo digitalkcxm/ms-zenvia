@@ -73,7 +73,7 @@ class MessageController {
       const allMessagesWithoutReceived = await messageModel.getMessagesWithoutReceived()
 
       if (allMessagesWithoutReceived.error)
-        return res.status(400).send({ error: allMessagesWithoutReceived.error })
+        return { error: allMessagesWithoutReceived.error }
 
       let zenviaData, statusUpdate
       allMessagesWithoutReceived.map(async (message) => {
@@ -93,16 +93,21 @@ class MessageController {
   async getNewMessages() {
     try {
       const messages = await zenviaService.getNewMessages()
-      let protocol,company
+      let protocol,company, reply
 
       messages.map(async (msg) =>{
-        console.log('MENSAGENS ==>>', msg)
 
         protocol = await protocolModel.getProtocolByPhone(msg.mobile)
-        console.log('ESSE VAI SER O PROTOCOLO', protocol[0].id)
+
         company = await protocolModel.getCompany(protocol[0].id)
-        console.log('ESSA COMPANY VAI RECEBER', company[0].id)
-        messageModel.insertReply(protocol[0].id, company[0].id, msg)
+
+        reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
+
+        if(reply == 'undefined'){
+          console.log('VOU FAZER NADA')
+        }else{
+          console.log('VOU MANDAR NO CALLBACK')
+        }
       })
 
     } catch (error) {

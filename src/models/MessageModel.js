@@ -15,10 +15,10 @@ class MessageModel {
       if (result)
         return result[0].id
 
-      return { error: 'Erro ao criar a mensage' }
+      return { error: 'Erro ao criar a mensagem.' }
     } catch (error) {
       console.log('ERRO AO CRIAR A MENSAGEM ==>> MODEL ==>>', error)
-      return { error: 'Erro ao criar a mensage' }
+      return { error: 'Erro ao criar a mensagem.' }
     }
   }
 
@@ -33,7 +33,7 @@ class MessageModel {
       return messages
     } catch (error) {
       console.log('ERRO AO CRIAR AO BUSCAR MENSAGENS SEM RECEIVED ==>> MODEL ==>>', error)
-      return { error: 'Erro ao criar a mensage' }
+      return { error: 'Erro ao criar a mensagem.' }
     }
   }
 
@@ -42,17 +42,13 @@ class MessageModel {
       const date = moment().format()
 
       const msg = {}
-
-      const messageAlreadyInserted = await database('message').select('id_zenvia')
+      const messageAlreadyInserted = await database('message').select('*')
         .where({
-          'id_zenvia': obj.id
+          'id_zenvia': String(obj.id)
         })
 
-      console.log('ESSAS MENSAGENS EXISTEM ==>>', Boolean(messageAlreadyInserted.lenght))
-
       let msgInserted
-      if (!Boolean(messageAlreadyInserted.lenght)) {
-        //vou inserir a msg
+      if (!messageAlreadyInserted.length) {
         msg.source = 'Customer'
         msg.id_zenvia = obj.id
         msg.created_at = date
@@ -61,14 +57,13 @@ class MessageModel {
         msg.msg = obj.body
         msg.mobile_operator_name = obj.mobileOperatorName
         msg.id_protocol = protocol
-        console.log('MENSAGEM A SER INSERIDA COMO RESPOSTA ==>>', msg)
-
         msgInserted = await database('message').returning(['id']).insert(msg)
-        console.log('RESULTADO DA INSERÇÃO ===>>>', msgInserted)
       }
 
+      return msgInserted
     } catch (error) {
-
+      console.log('ERRO AO CRIAR MENSAGEM DO CUSTOMER ==>> MODEL ==>>', error)
+      return { error: 'Erro ao criar a mensagem do customer.' }
     }
   }
 }
