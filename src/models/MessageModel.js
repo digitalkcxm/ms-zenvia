@@ -79,7 +79,7 @@ class MessageModel {
         .leftJoin('protocol', 'protocol.id', 'message.id_protocol')
         .leftJoin('company', 'company.id', 'protocol.id_company')
         .leftJoin('status_message', 'status_message.id_message', 'message.id')
-        .where('company.token_company', token)
+        .where('company.token', token)
         .whereNot('message.source', 'Customer')
         .whereBetween('message.created_at', [`${date.initDate}T${date.initHour}-300`, `${date.endDate}T${date.endHour}-300`])
 

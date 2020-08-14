@@ -4,12 +4,14 @@ const MessageModel = require('../models/MessageModel')
 const ZenviaService = require('../services/ZenviaService')
 const ProtocolModel = require('../models/ProtocolModel')
 const StatusMessageModel = require('../models/StatusMessageModel')
+const WebHook = require('../helpers/WebHook')
 
 const companyModel = new CompanyModel()
 const messageModel = new MessageModel()
 const zenviaService = new ZenviaService()
 const protocolModel = new ProtocolModel()
 const statusMessageModel = new StatusMessageModel()
+const webHook = new WebHook()
 
 class MessageController {
 
@@ -95,6 +97,7 @@ class MessageController {
       const messages = await zenviaService.getNewMessages()
       let protocol, company, reply
 
+      console.log('MENSAGENS QUE CHEGARAM ==>>', messages)
       messages.map(async (msg) => {
 
         protocol = await protocolModel.getProtocolByPhone(msg.mobile)
@@ -103,10 +106,13 @@ class MessageController {
 
         reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
 
-        if (reply == 'undefined') {
-          console.log('VOU FAZER NADA')
-        } else {
+        if (reply != 'undefined') {
           console.log('VOU MANDAR NO CALLBACK')
+
+          console.log('REPLY ==>>', reply)
+
+          //webHook.sendMessage(company[0].callback, )
+
         }
       })
 

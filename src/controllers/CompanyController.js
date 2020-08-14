@@ -62,7 +62,7 @@ class CompanyController {
       obj.name = req.body.name
       obj.callback = req.body.callback
       let tokenHash = obj.name + date
-      obj.token_company = hash({ foo: tokenHash })
+      obj.token = hash({ foo: tokenHash })
       obj.created_at = date
       obj.updated_at = date
 

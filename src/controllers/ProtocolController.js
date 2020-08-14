@@ -54,12 +54,12 @@ class ProtocolController {
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
 
-        return res.status(200).send({ id_protocol: protocol.id_protocol })
+        return res.status(201).send({ id_protocol: protocol.id_protocol })
       }
-      return res.status(200).send({ error: 'A company não existe' })
+      return res.status(400).send({ error: 'A company não existe' })
     } catch (error) {
       console.log('ERRO AO CRIAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(400).send({ error : 'Erro ao criar o protocolo.'})
+      return res.status(500).send({ error : 'Erro ao criar o protocolo.'})
     }
   }
 
@@ -87,7 +87,7 @@ class ProtocolController {
 
     } catch (error) {
       console.log('ERRO AO FECHAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(400).send({ error : 'Erro ao fechar o protocolo.'})
+      return res.status(500).send({ error : 'Erro ao fechar o protocolo.'})
     }
   }
 }
