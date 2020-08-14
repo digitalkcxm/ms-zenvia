@@ -22,7 +22,7 @@ class CompanyController {
       return res.status(200).send(allCompanies)
     } catch (error) {
       console.log('ERRO AO BUSCAR COMPANIES => CONTROLLER =>', error)
-      return res.status(400).send({ error: "Ocorreu um erro na seleção das companies." })
+      return res.status(500).send({ error: "Ocorreu um erro na seleção das companies." })
     }
   }
 
@@ -43,7 +43,7 @@ class CompanyController {
       return res.status(200).send(company[0])
     } catch (error) {
       console.log('ERRO AO BUSCAR COMPANY => CONTROLLER =>', error)
-      return res.status(400).send({ error: "Ocorreu um erro na seleção da company." })
+      return res.status(500).send({ error: "Ocorreu um erro na seleção da company." })
     }
   }
 
@@ -77,10 +77,10 @@ class CompanyController {
 
       companyCreated[0].created_at = moment(companyCreated[0].created_at).format('DD/MM/YYYY HH:mm')
 
-      return res.status(200).send(companyCreated[0])
+      return res.status(201).send(companyCreated[0])
     } catch (error) {
       console.log('ERRO AO CRIAR COMPANY => CONTROLLER =>', error)
-      return res.status(400).send({ error: "Ocorreu um erro ao criar a company." })
+      return res.status(500).send({ error: "Ocorreu um erro ao criar a company." })
     }
   }
 
@@ -116,7 +116,7 @@ class CompanyController {
       return res.status(200).send(updatedCompany[0])
     } catch (error) {
       console.log('ERRO AO ATUALIZAR COMPANY => CONTROLLER =>', error)
-      return res.status(400).send({ error: "Ocorreu um erro ao atualizar a company." })
+      return res.status(500).send({ error: "Ocorreu um erro ao atualizar a company." })
     }
   }
 }

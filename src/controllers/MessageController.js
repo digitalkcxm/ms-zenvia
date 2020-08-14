@@ -111,7 +111,15 @@ class MessageController {
 
           console.log('REPLY ==>>', reply)
 
-          //webHook.sendMessage(company[0].callback, )
+          const msgObj ={
+            body : msg.body,
+            chat: {
+              id: protocol[0].id
+            },
+            channel: 'sms'
+          }
+
+          webHook.sendMessage(company[0].callback, msgObj)
 
         }
       })
