@@ -1,6 +1,5 @@
 const moment = require('moment')
 const database = require('../config/database/database')
-const { where } = require('../config/database/database')
 
 class MessageModel {
 
@@ -64,6 +63,30 @@ class MessageModel {
     } catch (error) {
       console.log('ERRO AO CRIAR MENSAGEM DO CUSTOMER ==>> MODEL ==>>', error)
       return { error: 'Erro ao criar a mensagem do customer.' }
+    }
+  }
+
+  async getMessages(date, token) {
+    try {
+      const messages = await database('message').select(
+        'protocol.id                    as Protocolo',
+        'company.name                   as Nome_da_Compania',
+        'status_message.status_code     as Cod_Status_do_envio',
+        'message.msg                    as Texto',
+        'status_message.detail_code     as Status_de_Envio',
+        'message.created_at             as Data_de_Envio',
+        'status_message.received        as Data_da_Entrega')
+        .leftJoin('protocol', 'protocol.id', 'message.id_protocol')
+        .leftJoin('company', 'company.id', 'protocol.id_company')
+        .leftJoin('status_message', 'status_message.id_message', 'message.id')
+        .where('company.token_company', token)
+        .whereNot('message.source', 'Customer')
+        .whereBetween('message.created_at', [`${date.initDate}T${date.initHour}-300`, `${date.endDate}T${date.endHour}-300`])
+
+      return messages
+    } catch (error) {
+      console.log('ERRO AO BUSCAR MENSAGENS PARA O RELATÓRIO ==>> MODEL ==>>', error)
+      return { error: 'Erro ao buscar as mensagens.' }
     }
   }
 }

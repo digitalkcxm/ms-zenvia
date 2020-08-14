@@ -1,5 +1,5 @@
 const CompanyModel = require('../models/CompanyModel')
-const Moment = require('moment')
+const moment = require('moment')
 const MessageModel = require('../models/MessageModel')
 const ZenviaService = require('../services/ZenviaService')
 const ProtocolModel = require('../models/ProtocolModel')
@@ -62,7 +62,7 @@ class MessageController {
       return res.status(200).send({ send: true })
     } catch (error) {
       console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error)
-      return res.status(400).send({ error : 'Erro ao enviar a mensagem.'})
+      return res.status(500).send({ error: 'Erro ao enviar a mensagem.' })
     }
 
   }
@@ -93,9 +93,9 @@ class MessageController {
   async getNewMessages() {
     try {
       const messages = await zenviaService.getNewMessages()
-      let protocol,company, reply
+      let protocol, company, reply
 
-      messages.map(async (msg) =>{
+      messages.map(async (msg) => {
 
         protocol = await protocolModel.getProtocolByPhone(msg.mobile)
 
@@ -103,9 +103,9 @@ class MessageController {
 
         reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
 
-        if(reply == 'undefined'){
+        if (reply == 'undefined') {
           console.log('VOU FAZER NADA')
-        }else{
+        } else {
           console.log('VOU MANDAR NO CALLBACK')
         }
       })
@@ -113,6 +113,33 @@ class MessageController {
     } catch (error) {
       console.log('ERRO AO BUSCAR NOVOS SMS NA ZENVIA ==>> CONTROLLER ==>>', error)
     }
+  }
+
+  async getReportMessages(req, res) {
+    console.log('VAI TRAZER AS MSG')
+    req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
+
+    if (req.validationErrors())
+      return res.status(400).send({ error: req.validationErrors() })
+
+    try {
+
+      req.query.initDate ? req.query.initDate = moment(req.query.initDate).format('YYYY-MM-DD') : req.query.initDate = '2000-01-01'
+      req.query.endDate ? req.query.endDate = moment(req.query.endDate).format('YYYY-MM-DD') : req.query.endDate = moment().format('YYYY-MM-DD')
+      req.query.initHour ? req.query.initHour = moment(`2000-01-01T${req.query.initHour}`).format('HH:mm:ss') : req.query.initHour = '00:00:00'
+      req.query.endHour ? req.query.endHour = moment(`2000-01-01T${req.query.endHour}`).format('HH:mm:ss') : req.query.endHour = moment().format('HH:mm:ss')
+
+      const messagesInProtocols = await messageModel.getMessages(req.query, req.headers.authorization)
+
+      if (messagesInProtocols.error)
+        return res.status(400).send({ error: messagesInProtocols.error })
+
+      return res.status(200).send(messagesInProtocols)
+    } catch (error) {
+      console.log('ERROS AO FAZER A QUERY ==>>', error)
+      return res.status(500).send({ error: 'Erro ao buscar relatório.' })
+    }
+
   }
 }
 
