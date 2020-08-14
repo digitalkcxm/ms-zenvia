@@ -28,6 +28,9 @@ class ProtocolController {
       if (company[0].id) {
         let { schedule, msg, to } = req.body
 
+        if(to.substr(0,2) != '55')
+          to = '55'+ to
+
         if ((msg.length + company[0].name.length) > 159)
           return res.status(400).send({ error: `A mensagem ultrapassa o limite, ${companyToken[0].name}, junto da mensagem ultrapassa 160 caracteres.` })
 
