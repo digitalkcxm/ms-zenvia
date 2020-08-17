@@ -5,6 +5,7 @@ const ZenviaService = require('../services/ZenviaService')
 const ProtocolModel = require('../models/ProtocolModel')
 const StatusMessageModel = require('../models/StatusMessageModel')
 const WebHook = require('../helpers/WebHook')
+const ContactModel = require('../models/ContactModel')
 
 const companyModel = new CompanyModel()
 const messageModel = new MessageModel()
@@ -12,6 +13,7 @@ const zenviaService = new ZenviaService()
 const protocolModel = new ProtocolModel()
 const statusMessageModel = new StatusMessageModel()
 const webHook = new WebHook()
+const contactModel = new ContactModel()
 
 class MessageController {
 
@@ -111,8 +113,8 @@ class MessageController {
 
           console.log('REPLY ==>>', reply)
 
-          const msgObj ={
-            body : msg.body,
+          const msgObj = {
+            body: msg.body,
             chat: {
               id: protocol[0].id
             },
@@ -154,6 +156,62 @@ class MessageController {
       return res.status(500).send({ error: 'Erro ao buscar relatório.' })
     }
 
+  }
+
+  async sendMultipleMessages(req, res) {
+
+    let protocols = []
+    let arrayMessages = []
+
+    req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
+    req.assert('messages', 'A chave messages é obrigatório para multiplos envios.').notEmpty()
+    req.assert('messages', 'A chave messages é do tipo array, dentro dela deve conter objetos com, to e msg.').isArray()
+
+    if (req.validationErrors())
+      return res.status(400).send({ errors: req.validationErrors() })
+
+    try {
+
+      req.body.messages.map(message => {
+        message.to.substr(0, 2) != '55' && (message.to = '55' + message.to)
+      })
+
+      const company = await companyModel.getByToken(req.headers.authorization)
+
+      if (!company[0].activated)
+        return res.status(400).send({ error: 'A company está desativada.' })
+
+      const messagesToSend = req.body.messages
+      let contact, protocol, messageId, resultZenviaSend, statusMessage, schedule
+
+      await Promise.all(messagesToSend.map(async (actualMessage) => {
+        contact = await contactModel.createContact(actualMessage.to)
+        if (contact.error)
+          return res.status(400).send({ error: contact.error })
+
+          protocol = await protocolModel.create(company[0].id, contact)
+        if (protocol.error)
+          return res.status(400).send({ error: contact.error })
+
+        messageId = await messageModel.create(protocol.id_protocol, company[0].name, schedule, actualMessage.msg, 'Company')
+        if (messageId.error)
+          return res.status(400).send({ error: messageId.error })
+
+        resultZenviaSend = await zenviaService.sendMessage(company[0].name, to, false, msg, false, messageId)
+        if (resultZenviaSend.error)
+          return res.status(400).send({ error: resultZenviaSend.error })
+
+        statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+        if (statusMessage.error)
+          return res.status(400).send({ error: statusMessage.error })
+
+        protocols.push({ protocol: protocol.id_protocol, to: actualMessage.to })
+      }))
+
+      return res.status(201).send(protocols)
+    } catch (error) {
+
+    }
   }
 }
 
