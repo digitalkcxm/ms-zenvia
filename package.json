@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "NODE_ENV=testing node __tests__/config/database.js",
+    "test": "NODE_ENV=testing jest --detectOpenHandles",
     "migrate:latest": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
     "seed:run": "./node_modules/.bin/run.env ./node_modules/.bin/knex seed:run",
     "testmigrate:latest": "NODE_ENV=testing ./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
@@ -17,8 +18,10 @@
   "author": "Vitor Gomes",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^24.9.0",
     "nodemon": "^1.18.10",
-    "run.env": "^1.1.0"
+    "run.env": "^1.1.0",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "axios": "^0.18.0",

@@ -32,6 +32,22 @@ module.exports = {
     }
   },
 
+  testing: {
+    client: 'postgresql',
+    connection: {
+      host:     'localhost',
+      database: 'ms_zenvia_testes',
+      user:     'postgres',
+      password: 'root'
+    },
+    migrations: {
+      directory: __dirname + '/src/config/database/migrations'
+    },
+    seeds: {
+      directory: __dirname + '/src/config/database/seeds'
+    }
+  },
+
   production: {
     client: 'postgresql',
     connection: {

@@ -14,7 +14,10 @@ app.use((req, res, next) => next())
 
 routes(app)
 
-app.listen(process.env.PORT, () => console.log(`Server running in port ${ process.env.PORT }`))
+if(process.env.NODE_ENV !== 'testing'){
+  app.listen(process.env.PORT, () => console.log(`Server running in port ${ process.env.PORT }`))
+}
+
 
 module.exports = app
 
