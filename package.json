@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "pretest": "NODE_ENV=testing node __tests__/config/database.js",
-    "test": "NODE_ENV=testing jest --detectOpenHandles",
+    "test": "NODE_ENV=testing jest --detectOpenHandles --runInBand",
     "migrate:latest": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
     "seed:run": "./node_modules/.bin/run.env ./node_modules/.bin/knex seed:run",
     "testmigrate:latest": "NODE_ENV=testing ./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
