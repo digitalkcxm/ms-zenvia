@@ -17,7 +17,8 @@ class ZenviaService {
           to: to,
           msg: msg,
           flashSms: flashSms,
-          id: msgId
+          id: msgId,
+          aggregateId: "33384"
         }
       })
       return result

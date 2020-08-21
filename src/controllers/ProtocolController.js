@@ -45,7 +45,7 @@ class ProtocolController {
         const messageId = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
-
+        console.log('MESSAGE ID ==>>', messageId)
         const resultZenviaSend = await zenviaService.sendMessage(company[0].name, to, false, msg, false, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })

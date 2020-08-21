@@ -100,31 +100,38 @@ class MessageController {
       let protocol, company, reply
 
       console.log('MENSAGENS QUE CHEGARAM ==>>', messages)
-      messages.map(async (msg) => {
 
-        protocol = await protocolModel.getProtocolByPhone(msg.mobile)
+      if (messages != null) {
+        messages.map(async (msg) => {
 
-        company = await protocolModel.getCompany(protocol[0].id)
+          protocol = await protocolModel.getProtocolByPhone(msg.mobile)
 
-        reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
+          company = await protocolModel.getCompany(protocol[0].id)
 
-        if (reply != 'undefined') {
-          console.log('VOU MANDAR NO CALLBACK')
+          reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
 
-          console.log('REPLY ==>>', reply)
+          if (reply != 'undefined') {
+            console.log('VOU MANDAR NO CALLBACK')
 
-          const msgObj = {
-            body: msg.body,
-            chat: {
-              id: protocol[0].id
-            },
-            channel: 'sms'
+            console.log('REPLY ==>>', reply)
+
+            const msgObj = {
+              body: msg.body,
+              chat: {
+                id: protocol[0].id
+                //protocol[0].id.toString()
+              },
+              channel: 'smszv'
+            }
+            console.log('WEBHOOK COMPANY ==>>', company[0].callback)
+            console.log('WEBHOOKK MENSAGEM ==>>', msgObj)
+            webHook.sendMessage(company[0].callback, msgObj)
+
           }
-
-          webHook.sendMessage(company[0].callback, msgObj)
-
-        }
-      })
+        })
+      } else {
+        console.log('SEM NOVAS MENSAGENS')
+      }
 
     } catch (error) {
       console.log('ERRO AO BUSCAR NOVOS SMS NA ZENVIA ==>> CONTROLLER ==>>', error)
@@ -189,7 +196,7 @@ class MessageController {
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
-          protocol = await protocolModel.create(company[0].id, contact)
+        protocol = await protocolModel.create(company[0].id, contact)
         if (protocol.error)
           return res.status(400).send({ error: contact.error })
 
