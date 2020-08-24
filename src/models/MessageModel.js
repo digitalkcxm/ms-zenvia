@@ -45,7 +45,6 @@ class MessageModel {
         .where({
           'id_zenvia': String(obj.id)
         })
-
       let msgInserted
       if (!messageAlreadyInserted.length) {
         msg.source = 'Customer'
@@ -58,7 +57,6 @@ class MessageModel {
         msg.id_protocol = protocol
         msgInserted = await database('message').returning(['id']).insert(msg)
       }
-
       return msgInserted
     } catch (error) {
       console.log('ERRO AO CRIAR MENSAGEM DO CUSTOMER ==>> MODEL ==>>', error)

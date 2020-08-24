@@ -21,7 +21,7 @@ class ProtocolController {
 
     try {
       const company = await companyModel.getByToken(req.headers.authorization)
-
+      console.log('COMPANY ', company[0].name , ' TENTANDO CRIAR PROTOCOLO')
       if (!company[0].activated)
         return res.status(400).send({ error: 'A company está desativada.' })
 

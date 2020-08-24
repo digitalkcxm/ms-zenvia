@@ -110,27 +110,20 @@ class MessageController {
 
           reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
 
-          if (reply != 'undefined') {
-            console.log('VOU MANDAR NO CALLBACK')
-
-            console.log('REPLY ==>>', reply)
-
+          if (typeof reply != 'undefined') {
             const msgObj = {
               body: msg.body,
               chat: {
                 id: protocol[0].id
-                //protocol[0].id.toString()
               },
               channel: 'smszv'
             }
-            console.log('WEBHOOK COMPANY ==>>', company[0].callback)
-            console.log('WEBHOOKK MENSAGEM ==>>', msgObj)
             webHook.sendMessage(company[0].callback, msgObj)
 
           }
         })
       } else {
-        console.log('SEM NOVAS MENSAGENS')
+        console.log('---SEM NOVAS MENSAGENS---')
       }
 
     } catch (error) {
