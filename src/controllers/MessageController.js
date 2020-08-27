@@ -62,7 +62,8 @@ class MessageController {
       const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
       if (statusMessage.error)
         return res.status(400).send({ error: statusMessage.error })
-
+      console.log(`ENVIO DA MSG ==>> ${msg} ==>> para o numero ${phoneContact[0].phone}
+      PELA COMPANY ==>> ${companyToken[0].name}`)
       return res.status(200).send({ send: true })
     } catch (error) {
       console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error)
@@ -103,24 +104,28 @@ class MessageController {
 
       if (messages != null) {
         messages.map(async (msg) => {
-
           protocol = await protocolModel.getProtocolByPhone(msg.mobile)
 
-          company = await protocolModel.getCompany(protocol[0].id)
+          if (typeof protocol != 'undefined') {
+            company = await protocolModel.getCompany(protocol.id)
 
-          reply = await messageModel.insertReply(protocol[0].id, company[0].id, msg)
+            reply = await messageModel.insertReply(protocol.id, company[0].id, msg)
 
-          if (typeof reply != 'undefined') {
-            const msgObj = {
-              body: msg.body,
-              chat: {
-                id: protocol[0].id
-              },
-              channel: 'smszv'
+            if (typeof reply != 'undefined') {
+              const msgObj = {
+                body: msg.body,
+                chat: {
+                  id: protocol.id
+                },
+                channel: 'smszv'
+              }
+              console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
+              console.log('DADOS             ==>>', msgObj)
+              webHook.sendMessage(company[0].callback, msgObj)
+
             }
-            webHook.sendMessage(company[0].callback, msgObj)
-
           }
+
         })
       } else {
         console.log('---SEM NOVAS MENSAGENS---')
@@ -159,7 +164,7 @@ class MessageController {
   }
 
   async sendMultipleMessages(req, res) {
-
+    console.log('ENVIAR MULTIPLAS MSG')
     let protocols = []
     let arrayMessages = []
 
@@ -177,15 +182,18 @@ class MessageController {
       })
 
       const company = await companyModel.getByToken(req.headers.authorization)
+      if(company.length == 0)
+        return res.status(400).send({ error: 'Não existem uma company para o token informado.' })
 
       if (!company[0].activated)
         return res.status(400).send({ error: 'A company está desativada.' })
+
 
       const messagesToSend = req.body.messages
       let contact, protocol, messageId, resultZenviaSend, statusMessage, schedule
 
       await Promise.all(messagesToSend.map(async (actualMessage) => {
-        contact = await contactModel.createContact(actualMessage.to)
+        contact = await contactModel.createContact(actualMessage)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
@@ -197,7 +205,7 @@ class MessageController {
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-        resultZenviaSend = await zenviaService.sendMessage(company[0].name, to, false, msg, false, messageId)
+        resultZenviaSend = await zenviaService.sendMessage(company[0].name, actualMessage.to, false, actualMessage.msg, false, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 
@@ -210,7 +218,8 @@ class MessageController {
 
       return res.status(201).send(protocols)
     } catch (error) {
-
+      console.log('ERRO NO ENVIO MULTIPLO DE MSG ==>>', error)
+      return res.status(500).send({error: 'Houve um erro no servidor.'})
     }
   }
 }

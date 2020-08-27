@@ -53,8 +53,8 @@ class ProtocolController {
         const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
-
-        return res.status(201).send({ id_protocol: protocol.id_protocol })
+        console.log('CRIACAO DO PROTOCOLO ==>>', { protocol_id: protocol.id_protocol })
+        return res.status(201).send({ protocol_id: protocol.id_protocol })
       }
       return res.status(400).send({ error: 'A company não existe' })
     } catch (error) {
@@ -82,9 +82,8 @@ class ProtocolController {
       const protocolWillBeClosed = await protocolModel.close(closedProtocol[0].id)
       if (protocolWillBeClosed.error)
         return res.status(400).send({ error: protocolWillBeClosed.error })
-
+      console.log('FECHAMENTO DO PROTOCOLO ==>>', id)
       return res.status(200).send({ message: 'O protocolo foi fechado.' })
-
     } catch (error) {
       console.log('ERRO AO FECHAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
       return res.status(500).send({ error : 'Erro ao fechar o protocolo.'})

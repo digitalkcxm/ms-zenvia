@@ -76,7 +76,7 @@ class CompanyController {
         return res.status(400).send({ error: companyCreated.error })
 
       companyCreated[0].created_at = moment(companyCreated[0].created_at).format('DD/MM/YYYY HH:mm')
-
+      console.log('CRIAÇÃO DA COMPANY ==>>', companyCreated[0])
       return res.status(201).send(companyCreated[0])
     } catch (error) {
       console.log('ERRO AO CRIAR COMPANY => CONTROLLER =>', error)
@@ -112,6 +112,7 @@ class CompanyController {
         return res.status(400).send({ error: updatedCompany.error })
 
       updatedCompany[0].updated_at = moment(updatedCompany[0].updated_at).format('DD/MM/YYYY HH:mm')
+      console.log('ATUALIZAÇÃO DA COMPANY ==>>', updatedCompany[0])
 
       return res.status(200).send(updatedCompany[0])
     } catch (error) {
