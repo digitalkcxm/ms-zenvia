@@ -193,7 +193,7 @@ class MessageController {
       let contact, protocol, messageId, resultZenviaSend, statusMessage, schedule
 
       await Promise.all(messagesToSend.map(async (actualMessage) => {
-        contact = await contactModel.createContact(actualMessage)
+        contact = await contactModel.createContact(actualMessage.to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
