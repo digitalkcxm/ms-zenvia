@@ -13,7 +13,6 @@ class ZenviaService {
 
       const result = await instance.post('/send-sms', {
         sendSmsRequest: {
-          from: from,
           to: to,
           msg: msg,
           flashSms: flashSms,
