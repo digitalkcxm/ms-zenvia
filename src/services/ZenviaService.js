@@ -4,7 +4,7 @@ const moment = require('moment')
 
 class ZenviaService {
 
-  async sendMessage(from, to, schedule = null, msg, flashSms = false, msgId) {
+  async sendMessage(to, msg, msgId) {
     try {
       const instance = await this._istance()
 
@@ -15,7 +15,6 @@ class ZenviaService {
         sendSmsRequest: {
           to: to,
           msg: msg,
-          flashSms: flashSms,
           id: msgId,
           aggregateId: "33384"
         }
