@@ -50,6 +50,9 @@ class CompanyController {
   async create(req, res) {
     req.assert('name', 'A propriedade name é obrigatória.').notEmpty()
     req.assert('callback', 'A propriedade callback é obrigatória.').notEmpty()
+    req.assert('zenvia_token', 'O token_zenvia é obrigatório.').notEmpty()
+    req.assert('aggregated_id', 'O aggregated_id é obrigatório.').notEmpty()
+
 
     if (req.validationErrors())
       return res.status(400).send({ error: req.validationErrors() })
@@ -61,6 +64,8 @@ class CompanyController {
 
       obj.name = req.body.name
       obj.callback = req.body.callback
+      obj.zenvia_token = req.body.zenvia_token
+      obj.aggregated_id = req.body.aggregated_id
       let tokenHash = obj.name + date
       obj.token = hash({ foo: tokenHash })
       obj.created_at = date
@@ -101,6 +106,8 @@ class CompanyController {
       req.body.callback ? obj.callback = req.body.callback : ''
       typeof req.body.activated == 'boolean' ? obj.activated = req.body.activated : ''
       obj.updated_at = date
+      obj.zenvia_token = req.body.zenvia_token
+      obj.aggregated_id = req.body.aggregated_id
 
       const nameAlreadyExists = await companyModel.getByName(obj.name)
       if (nameAlreadyExists[0] && nameAlreadyExists[0].id != req.body.id)
