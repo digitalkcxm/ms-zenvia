@@ -10,6 +10,4 @@ exports.up = knex => knex.schema.createTable('status_message', table =>{
   table.foreign('id_message').references('message.id')
 })
 
-exports.down = function(knex, Promise) {
-
-};
+exports.down = knex => knex.schema.dropTableIfExists('status_message')

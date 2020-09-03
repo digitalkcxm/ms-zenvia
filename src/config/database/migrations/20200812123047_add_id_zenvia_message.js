@@ -5,5 +5,7 @@ exports.up = (knex, Promise) => knex.schema.hasColumn('message', 'id_zenvia').th
 })
 
 exports.down = function (knex, Promise) {
-
-};
+  return knex.schema.hasColumn('company', 'id_zenvia').then(() => {
+    knex.schema.table('department', t => t.dropColumn('id_zenvia'))
+  })
+}
