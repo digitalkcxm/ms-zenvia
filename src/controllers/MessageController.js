@@ -117,7 +117,7 @@ class MessageController {
                 chat: {
                   id: protocol.id
                 },
-                channel: 'smszv'
+                channel: 'sms_zenvia'
               }
               console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
               console.log('DADOS             ==>>', msgObj)
