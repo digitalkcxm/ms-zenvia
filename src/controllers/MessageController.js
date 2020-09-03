@@ -33,7 +33,7 @@ class MessageController {
         return res.status(400).send({ error: companyToken.error })
 
       if ((msg.length + companyToken[0].name.length) > 159)
-        return res.status(400).send({ error: `A mensagem ultrapassa o limite, ${companyToken[0].name}, junto da mensagem ultrapassa 160 caracteres.` })
+        return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres'})
 
       const protocol = await protocolModel.getById(req.body.id_protocol)
       if (protocol.error)
