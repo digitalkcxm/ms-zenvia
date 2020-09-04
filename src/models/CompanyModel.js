@@ -54,7 +54,7 @@ class CompanyModel{
   async create(obj){
     try {
       const companyCreated = await database('company')
-      .returning(['id', 'name', 'callback', 'token', 'activated', 'created_at' ])
+      .returning(['id', 'name', 'callback', 'token', 'zenvia_token', 'aggregated_id', 'activated', 'created_at' ])
       .insert( obj )
       return companyCreated
     } catch (error) {
@@ -65,7 +65,7 @@ class CompanyModel{
 
   async update(id, obj){
     try {
-      const updatedCompany = await database('company').returning(['id', 'name', 'callback', 'token', 'activated', 'updated_at' ]).update( obj ).where({ id })
+      const updatedCompany = await database('company').returning(['id', 'name', 'callback', 'token', 'zenvia_token', 'aggregated_id','activated', 'updated_at' ]).update( obj ).where({ id })
       return updatedCompany
     } catch (error) {
       console.log('ERRO AO ATUALIZAR COMPANY => MODEL =>', error)

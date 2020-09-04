@@ -3,11 +3,11 @@ const database = require('../config/database/database')
 
 class MessageModel {
 
-  async create(id_protocol, from, schedule, msg,
-    source, mobile = '', mobile_operator_name = '', callback_option = '', flash_sms = false) {
+  async create(id_protocol, msg,
+    source, mobile_operator_name = '') {
     try {
       const result = await database('message').returning(['id']).insert({
-        id_protocol, schedule, msg,
+        id_protocol, msg,
         source, mobile_operator_name,
         created_at: moment().format(), updated_at: moment().format()
       })

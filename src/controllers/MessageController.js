@@ -26,7 +26,7 @@ class MessageController {
       return res.status(400).send({ error: req.validationErrors() })
 
     try {
-      const { msg, schedule } = req.body
+      const { msg } = req.body
 
       const companyToken = await companyModel.getByToken(req.headers.authorization)
       if (companyToken.error)
@@ -51,11 +51,12 @@ class MessageController {
       if (phoneContact.error)
         return res.status(400).send({ error: phoneContact.error })
 
-      const messageId = await messageModel.create(protocol[0].id, companyToken[0].name, schedule, msg, 'Company')
+      const messageId = await messageModel.create(protocol[0].id, msg, 'Company')
       if (messageId.error)
         return res.status(400).send({ error: messageId.error })
 
-      const resultZenviaSend = await zenviaService.sendMessage(phoneContact[0].phone, msg, messageId)
+      console.log('COMPANY TOKEN AQUI ==>>', companyToken)
+      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0],phoneContact[0].phone, msg, messageId)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
 
@@ -190,7 +191,7 @@ class MessageController {
 
 
       const messagesToSend = req.body.messages
-      let contact, protocol, messageId, resultZenviaSend, statusMessage, schedule
+      let contact, protocol, messageId, resultZenviaSend, statusMessage
 
       await Promise.all(messagesToSend.map(async (actualMessage) => {
         contact = await contactModel.createContact(actualMessage.to)
@@ -201,11 +202,11 @@ class MessageController {
         if (protocol.error)
           return res.status(400).send({ error: contact.error })
 
-        messageId = await messageModel.create(protocol.id_protocol, company[0].name, schedule, actualMessage.msg, 'Company')
+        messageId = await messageModel.create(protocol.id_protocol, actualMessage.msg, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-        resultZenviaSend = await zenviaService.sendMessage(actualMessage.to, actualMessage.msg, messageId)
+        resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.msg, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 

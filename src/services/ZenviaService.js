@@ -4,10 +4,9 @@ const moment = require('moment')
 
 class ZenviaService {
 
-  async sendMessage(to, msg, msgId) {
+  async sendMessage(company, to, msg, msgId) {
     try {
-      const instance = await this._istance()
-
+      const instance = await this._istance(company.zenvia_token)
       if (instance.error)
         return instance.error
 
@@ -16,9 +15,10 @@ class ZenviaService {
           to: to,
           msg: msg,
           id: msgId,
-          aggregateId: "33384"
+          aggregateId: company.aggregated_id
         }
       })
+
       return result
     } catch (error) {
       console.log('ERRO AO ENVIAR A MENSAGEM ==>> ZENVIA SERVICE ==>>', error)
@@ -67,7 +67,7 @@ class ZenviaService {
   }
 
 
-  _istance() {
+  _istance(authorization_zenvia) {
     try {
       return axios.create({
         baseURL: process.env.BASE_ZENVIA,
@@ -75,7 +75,7 @@ class ZenviaService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': process.env.AUTHORIZATION_ZENVIA
+          'Authorization': authorization_zenvia
         }
       })
     } catch (error) {

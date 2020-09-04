@@ -26,7 +26,7 @@ class ProtocolController {
         return res.status(400).send({ error: 'A company está desativada.' })
 
       if (company[0].id) {
-        let { schedule, msg, to } = req.body
+        let {msg, to } = req.body
 
         if(to.substr(0,2) != '55')
           to = '55'+ to
@@ -42,11 +42,11 @@ class ProtocolController {
         if (protocol.error)
           return res.status(400).send({ error: contact.error })
 
-        const messageId = await messageModel.create(protocol.id_protocol, company[0].name, schedule, msg, 'Company')
+        const messageId = await messageModel.create(protocol.id_protocol, msg, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
         console.log('MESSAGE ID ==>>', messageId)
-        const resultZenviaSend = await zenviaService.sendMessage(to, msg, messageId)
+        const resultZenviaSend = await zenviaService.sendMessage(company[0], to, msg, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 
