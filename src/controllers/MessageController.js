@@ -33,7 +33,7 @@ class MessageController {
         return res.status(400).send({ error: companyToken.error })
 
       if ((msg.length + companyToken[0].name.length) > 159)
-        return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres'})
+        return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
 
       const protocol = await protocolModel.getById(req.body.id_protocol)
       if (protocol.error)
@@ -56,7 +56,7 @@ class MessageController {
         return res.status(400).send({ error: messageId.error })
 
       console.log('COMPANY TOKEN AQUI ==>>', companyToken)
-      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0],phoneContact[0].phone, msg, messageId)
+      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, messageId)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
 
@@ -76,19 +76,25 @@ class MessageController {
   async getZenviaStatus() {
     try {
 
-      const allMessagesWithoutReceived = await messageModel.getMessagesWithoutReceived()
 
-      if (allMessagesWithoutReceived.error)
-        return { error: allMessagesWithoutReceived.error }
+      const allCompanies = await companyModel.getAll()
 
-      let zenviaData, statusUpdate
-      allMessagesWithoutReceived.map(async (message) => {
-        zenviaData = await zenviaService.getStatusById(message.id)
-        if (zenviaData.error)
-          return
-        statusUpdate = await statusMessageModel.update(zenviaData, message.id)
-        if (statusUpdate.error)
-          return
+      allCompanies.map(async (actualCompany) => {
+        let allMessagesWithoutReceived = await messageModel.getMessagesWithoutReceived()
+
+        if (allMessagesWithoutReceived.error)
+          return { error: allMessagesWithoutReceived.error }
+
+        let zenviaData, statusUpdate
+        allMessagesWithoutReceived.map(async (message) => {
+          zenviaData = await zenviaService.getStatusById(message.id, actualCompany)
+          console.log('STATUS MESSAGE ', message.id, ' ==>>', zenviaData)
+          if (zenviaData.error)
+            return
+          statusUpdate = await statusMessageModel.update(zenviaData, message.id)
+          if (statusUpdate.error)
+            return
+        })
       })
 
     } catch (error) {
@@ -98,42 +104,47 @@ class MessageController {
 
   async getNewMessages() {
     try {
-      const messages = await zenviaService.getNewMessages()
-      let protocol, company, reply
 
-      console.log('MENSAGENS QUE CHEGARAM ==>>', messages)
+      const allCompanies = await companyModel.getAll()
 
-      if (messages != null) {
-        messages.map(async (msg) => {
-          protocol = await protocolModel.getProtocolByPhone(msg.mobile)
+      allCompanies.map(async (actualCompany) => {
 
-          if (typeof protocol != 'undefined') {
-            company = await protocolModel.getCompany(protocol.id)
+        let messages = await zenviaService.getNewMessages(actualCompany)
+        let protocol, company, reply
 
-            reply = await messageModel.insertReply(protocol.id, company[0].id, msg)
+        if (messages != null) {
+          console.log('MENSAGENS DA COMPANY ', actualCompany.name, ' CHEGARAM ==>>', messages)
+          messages.map(async (msg) => {
+            protocol = await protocolModel.getProtocolByPhone(msg.mobile)
+            console.log('PROTOCOLO REFERENTE A MSG QUE CHEGOU ==>>', protocol)
+            if (typeof protocol != 'undefined') {
+              company = await protocolModel.getCompany(protocol.id)
 
-            if (typeof reply != 'undefined') {
-              const msgObj = {
-                body: msg.body,
-                chat: {
-                  id: protocol.id
-                },
-                channel: 'sms_zenvia'
+              reply = await messageModel.insertReply(protocol.id, company[0].id, msg)
+
+              if (typeof reply != 'undefined') {
+                let msgObj = {
+                  body: msg.body,
+                  chat: {
+                    id: protocol.id
+                  },
+                  channel: 'sms_zenvia'
+                }
+                console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
+                console.log('DADOS             ==>>', msgObj)
+                webHook.sendMessage(company[0].callback, msgObj)
+
               }
-              console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
-              console.log('DADOS             ==>>', msgObj)
-              webHook.sendMessage(company[0].callback, msgObj)
-
             }
-          }
 
-        })
-      } else {
-        console.log('---SEM NOVAS MENSAGENS---')
-      }
+          })
+        } else {
+          console.log('---SEM NOVAS MENSAGENS PARA A COMPANY ', actualCompany.name, '---')
+        }
 
+      })
     } catch (error) {
-      console.log('ERRO AO BUSCAR NOVOS SMS NA ZENVIA ==>> CONTROLLER ==>>', error)
+      // console.log('ERRO AO BUSCAR NOVOS SMS NA ZENVIA ==>> CONTROLLER ==>>', error)
     }
   }
 
@@ -183,7 +194,7 @@ class MessageController {
       })
 
       const company = await companyModel.getByToken(req.headers.authorization)
-      if(company.length == 0)
+      if (company.length == 0)
         return res.status(400).send({ error: 'Não existem uma company para o token informado.' })
 
       if (!company[0].activated)
@@ -220,7 +231,7 @@ class MessageController {
       return res.status(201).send(protocols)
     } catch (error) {
       console.log('ERRO NO ENVIO MULTIPLO DE MSG ==>>', error)
-      return res.status(500).send({error: 'Houve um erro no servidor.'})
+      return res.status(500).send({ error: 'Houve um erro no servidor.' })
     }
   }
 }

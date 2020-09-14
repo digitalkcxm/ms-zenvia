@@ -10,7 +10,7 @@ class WebHook {
       } catch (err) {
         console.log('ERRO MISERAVEL ==>>', err)
       }
-      return true
+      return result
     } catch (error) {
       console.log('ERRO AO ENVIAR A MENSAGEM NO CALLBACK ==> WEBHOOK  ==>>', error)
       return true

@@ -26,9 +26,9 @@ class ZenviaService {
     }
   }
 
-  async getStatusById(id) {
+  async getStatusById(id, actualCompany) {
     try {
-      const instance = await this._istanceStatus()
+      const instance = await this._istanceStatus(actualCompany.zenvia_token)
       if (instance.error)
         return instance.error
 
@@ -40,7 +40,7 @@ class ZenviaService {
     }
   }
 
-  async getNewMessages() {
+  async getNewMessages(company) {
     try {
       let startDate = moment().subtract("5", "days").format('YYYY/MM/DD HH:mm:ss')
       startDate = startDate.replace(' ', 'T')
@@ -52,7 +52,7 @@ class ZenviaService {
       actualDate = actualDate.replace('/', '-')
       actualDate = actualDate.replace('/', '-')
 
-      const instance = await this._istance()
+      const instance = await this._istance(company.zenvia_token)
       if (instance.error)
         return instance.error
 
@@ -83,14 +83,14 @@ class ZenviaService {
     }
   }
 
-  _istanceStatus() {
+  _istanceStatus(authorization_zenvia) {
     try {
       return axios.create({
         baseURL: process.env.BASE_ZENVIA,
         timeout: 180000,
         headers: {
           'Accept': 'application/json',
-          'Authorization': process.env.AUTHORIZATION_ZENVIA
+          'Authorization': authorization_zenvia
         }
       })
     } catch (error) {
