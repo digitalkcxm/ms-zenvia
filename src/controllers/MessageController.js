@@ -75,11 +75,11 @@ class MessageController {
 
   async getZenviaStatus() {
     try {
-
-
       const allCompanies = await companyModel.getAll()
 
-      allCompanies.map(async (actualCompany) => {
+      const activatedCompanies = allCompanies.filter(company => company.activated)
+
+      activatedCompanies.map(async (actualCompany) => {
         let allMessagesWithoutReceived = await messageModel.getMessagesWithoutReceived()
 
         if (allMessagesWithoutReceived.error)
@@ -104,11 +104,11 @@ class MessageController {
 
   async getNewMessages() {
     try {
-
       const allCompanies = await companyModel.getAll()
 
-      allCompanies.map(async (actualCompany) => {
+      const activatedCompanies = allCompanies.filter(company => company.activated)
 
+      activatedCompanies.map(async (actualCompany) => {
         let messages = await zenviaService.getNewMessages(actualCompany)
         let protocol, company, reply
 

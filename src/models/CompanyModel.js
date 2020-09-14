@@ -5,7 +5,6 @@ class CompanyModel{
   async getAll(){
     try {
       const allCompanies = await database('company').orderBy('created_at', 'asc')
-      .where('activated', true)
 
       return allCompanies
     } catch (error) {
