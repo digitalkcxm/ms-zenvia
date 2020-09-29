@@ -51,8 +51,6 @@ class CompanyController {
     req.assert('name', 'A propriedade name é obrigatória.').notEmpty()
     req.assert('callback', 'A propriedade callback é obrigatória.').notEmpty()
     req.assert('zenvia_token', 'O token_zenvia é obrigatório.').notEmpty()
-    req.assert('aggregated_id', 'O aggregated_id é obrigatório.').notEmpty()
-
 
     if (req.validationErrors())
       return res.status(400).send({ error: req.validationErrors() })
