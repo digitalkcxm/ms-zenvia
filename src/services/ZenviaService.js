@@ -10,14 +10,26 @@ class ZenviaService {
       if (instance.error)
         return instance.error
 
-      const result = await instance.post('/send-sms', {
-        sendSmsRequest: {
-          to: to,
-          msg: msg,
-          id: msgId,
-          aggregateId: company.aggregated_id
-        }
-      })
+      let result
+
+      if (company.aggregated_id) {
+        result = await instance.post('/send-sms', {
+          sendSmsRequest: {
+            to: to,
+            msg: msg,
+            id: msgId,
+            aggregateId: company.aggregated_id
+          }
+        })
+      } else {
+        result = await instance.post('/send-sms', {
+          sendSmsRequest: {
+            to: to,
+            msg: msg,
+            id: msgId
+          }
+        })
+      }
 
       return result
     } catch (error) {
