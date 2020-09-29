@@ -138,8 +138,6 @@ class MessageController {
             }
 
           })
-        } else {
-          console.log('---SEM NOVAS MENSAGENS PARA A COMPANY ', actualCompany.name, '---')
         }
 
       })
