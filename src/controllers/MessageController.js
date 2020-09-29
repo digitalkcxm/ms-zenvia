@@ -114,6 +114,9 @@ class MessageController {
 
         if (messages != null) {
           console.log('MENSAGENS DA COMPANY ', actualCompany.name, ' CHEGARAM ==>>', messages)
+          if(!Array.isArray(messages))
+            return
+
           messages.map(async (msg) => {
             protocol = await protocolModel.getProtocolByPhone(msg.mobile)
             console.log('PROTOCOLO REFERENTE A MSG QUE CHEGOU ==>>', protocol)
