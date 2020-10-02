@@ -195,6 +195,7 @@ class MessageController {
       })
 
       const company = await companyModel.getByToken(req.headers.authorization)
+      console.log('COMPANY ', company[0].name ,' ENVIANDO CAMPANHA')
       if (company.length == 0)
         return res.status(400).send({ error: 'Não existem uma company para o token informado.' })
 
@@ -203,32 +204,31 @@ class MessageController {
 
 
       const messagesToSend = req.body.messages
-      let contact, protocol, messageId, resultZenviaSend, statusMessage
 
-      await Promise.all(messagesToSend.map(async (actualMessage) => {
-        contact = await contactModel.createContact(actualMessage.to)
+      const testArray = await Promise.all(messagesToSend.map(async actualMessage => {
+        const contact = await contactModel.createContact(actualMessage.to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
-        protocol = await protocolModel.create(company[0].id, contact)
-        if (protocol.error)
+        const protocolCampanha = await protocolModel.create(company[0].id, contact)
+        if (protocolCampanha.error)
           return res.status(400).send({ error: contact.error })
 
-        messageId = await messageModel.create(protocol.id_protocol, actualMessage.msg, 'Company')
+          const messageId = await messageModel.create(protocolCampanha.id_protocol, actualMessage.text, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-        resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.msg, messageId)
+          const resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.text, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 
-        statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+          const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
 
-        protocols.push({ protocol: protocol.id_protocol, to: actualMessage.to })
+        protocols.push({ protocol: protocolCampanha.id_protocol, to: actualMessage.to })
+        return protocolCampanha.id_protocol
       }))
-
       return res.status(201).send(protocols)
     } catch (error) {
       console.log('ERRO NO ENVIO MULTIPLO DE MSG ==>>', error)
