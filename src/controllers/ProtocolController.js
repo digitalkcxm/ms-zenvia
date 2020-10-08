@@ -40,7 +40,7 @@ class ProtocolController {
 
         const protocol = await protocolModel.create(company[0].id, contact)
         if (protocol.error)
-          return res.status(400).send({ error: contact.error })
+          return res.status(400).send({ error: protocol.error })
 
         const messageId = await messageModel.create(protocol.id_protocol, msg, 'Company')
         if (messageId.error)
