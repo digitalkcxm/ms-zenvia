@@ -19,20 +19,23 @@ class ProtocolController {
     req.assert('msg', 'A propriedade msg é obrigatória.').notEmpty()
     req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
 
+    if (req.validationErrors())
+      return res.status(400).send({ errors: req.validationErrors() })
+
     try {
       const company = await companyModel.getByToken(req.headers.authorization)
-      console.log('COMPANY ', company[0] , ' TENTANDO CRIAR PROTOCOLO')
+      console.log('COMPANY ', company[0], ' TENTANDO CRIAR PROTOCOLO')
       if (!company[0].activated)
         return res.status(400).send({ error: 'A company está desativada.' })
 
       if (company[0].id) {
-        let {msg, to } = req.body
+        let { msg, to } = req.body
 
-        if(to.substr(0,2) != '55')
-          to = '55'+ to
+        if (to.substr(0, 2) != '55')
+          to = '55' + to
 
-        if (msg.length  > 160)
-          return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres'})
+        if (msg.length > 160)
+          return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
 
         const contact = await contactModel.createContact(to)
         if (contact.error)
@@ -59,7 +62,7 @@ class ProtocolController {
       return res.status(400).send({ error: 'A company não existe' })
     } catch (error) {
       console.log('ERRO AO CRIAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(500).send({ error : 'Erro ao criar o protocolo.'})
+      return res.status(500).send({ error: 'Erro ao criar o protocolo.' })
     }
   }
 
@@ -67,6 +70,9 @@ class ProtocolController {
 
     req.assert('Authorization', 'O header Authorization é obrigatório.').notEmpty()
     req.assert('id_protocol', 'O id_protocol é obrigatório.').notEmpty()
+
+    if (req.validationErrors())
+      return res.status(400).send({ errors: req.validationErrors() })
 
     try {
       const id = parseInt(req.body.id_protocol)
@@ -86,7 +92,7 @@ class ProtocolController {
       return res.status(200).send({ message: 'O protocolo foi fechado.' })
     } catch (error) {
       console.log('ERRO AO FECHAR O PROTOCOLO ==>> CONTROLLER ==>>', error)
-      return res.status(500).send({ error : 'Erro ao fechar o protocolo.'})
+      return res.status(500).send({ error: 'Erro ao fechar o protocolo.' })
     }
   }
 }
