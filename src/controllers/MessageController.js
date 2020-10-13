@@ -32,7 +32,7 @@ class MessageController {
       if (companyToken.error)
         return res.status(400).send({ error: companyToken.error })
 
-      if ((msg.length + companyToken[0].name.length) > 159)
+      if (msg.length > 159)
         return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
 
       const protocol = await protocolModel.getById(req.body.id_protocol)
@@ -40,7 +40,6 @@ class MessageController {
         return res.status(400).send({ error: protocol.error })
 
       const companyProtocol = await companyModel.getById(protocol[0].id_company)
-
       if (companyToken[0].id != companyProtocol[0].id)
         return res.status(400).send({ error: 'A company atual não é a responsável por este protocolo' })
 
@@ -55,7 +54,6 @@ class MessageController {
       if (messageId.error)
         return res.status(400).send({ error: messageId.error })
 
-      console.log('COMPANY TOKEN AQUI ==>>', companyToken)
       const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, messageId)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
@@ -131,7 +129,7 @@ class MessageController {
                   chat: {
                     id: protocol.id
                   },
-                  channel: 'sms_zenvia'
+                  channel: 'sms'
                 }
                 console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
                 console.log('DADOS             ==>>', msgObj)
