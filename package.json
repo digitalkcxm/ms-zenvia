@@ -19,21 +19,29 @@
   "license": "ISC",
   "devDependencies": {
     "jest": "^24.9.0",
-    "nodemon": "^1.18.10",
-    "run.env": "^1.1.0",
     "supertest": "^4.0.2"
   },
   "dependencies": {
+    "-": "0.0.1",
+    "apm": "^1.0.2",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "cron": "^1.7.0",
     "dotenv": "^7.0.0",
+    "elastic": "^0.1.10",
+    "elastic-apm-node": "^3.7.0",
+    "elastic-apm-node-opentracing": "^2.0.0",
     "express": "^4.16.4",
     "express-validator": "^5.3.1",
     "knex": "^0.21.0",
     "moment": "^2.24.0",
     "object-hash": "^2.0.3",
-    "pg": "^8.0.0"
+    "opentracing": "^0.14.4",
+    "pg": "^8.0.0",
+    "node": "^14.13.1",
+    "nodemon": "^1.18.10",
+    "run.env": "^1.1.0",
+    "save": "^2.4.0"
   }
 }
