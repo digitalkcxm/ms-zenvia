@@ -26,8 +26,7 @@ class MessageModel {
 
       const messages = await database('message').select('message.id')
         .leftJoin('status_message', 'message.id', 'status_message.id_message')
-        .whereNull('status_message.received')
-        .whereNotNull('status_message.id_message')
+        .whereNotIn('detail_code', [120])
 
       return messages
     } catch (error) {
