@@ -3,7 +3,6 @@ const database = require('../config/database/database')
 class ReportModel {
 
   async listProtocoByStatus(companyId, listProtocol, status) {
-    console.log('PARAMETRO DE BUSCA ', companyId, listProtocol, status)
     try {
 
       const result = await database('status_message')
