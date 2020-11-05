@@ -26,12 +26,12 @@ class MessageModel {
 
       const messages = await database('message').select('message.id')
         .leftJoin('status_message', 'message.id', 'status_message.id_message')
-        .whereNotIn('detail_code', [120])
+        .whereNotIn('status_message.detail_code', [120])
 
       return messages
     } catch (error) {
       console.log('ERRO AO CRIAR AO BUSCAR MENSAGENS SEM RECEIVED ==>> MODEL ==>>', error)
-      return { error: 'Erro ao criar a mensagem.' }
+      return { error: 'Erro ao buscar status das mensagens.' }
     }
   }
 

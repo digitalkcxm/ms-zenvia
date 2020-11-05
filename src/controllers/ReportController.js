@@ -18,7 +18,6 @@ async listProtocoByStatus(req,res){
 
     const token = req.headers.authorization
     const company  = await companyModel.getByToken(token)
-    console.log('COMPANY BUSCANDO REPORTS ', company)
 
     if(company.error)
       return res.status(400).send(company)
