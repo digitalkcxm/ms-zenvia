@@ -73,8 +73,8 @@ class ZenviaService {
       const allMessages = resultNewMessages.data.receivedResponse.receivedMessages
       return allMessages
     } catch (error) {
-      console.log('ERRO AO BUSCAR NOVAS MENSAGENS ==>> ZENVIA SERVICE ==>>', error)
-      return { error: error }
+      //console.log('ERRO AO BUSCAR NOVAS MENSAGENS ==>> ZENVIA SERVICE ==>>', error)
+      return { error: 'Erro ao buscar novas mensagens' }
     }
   }
 

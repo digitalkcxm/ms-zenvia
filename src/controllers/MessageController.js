@@ -106,14 +106,13 @@ class MessageController {
 
       activatedCompanies.map(async (actualCompany) => {
         let messages = await zenviaService.getNewMessages(actualCompany)
-        let protocol, company, reply
-
-        if (messages != null) {
+        if (messages != null && !messages.error) {
           console.log('MENSAGENS DA COMPANY ', actualCompany.name, ' CHEGARAM ==>>', messages)
           if(!Array.isArray(messages))
             return
 
           messages.map(async (msg) => {
+            let protocol, company, reply
             protocol = await protocolModel.getProtocolByPhone(msg.mobile)
             console.log('PROTOCOLO REFERENTE A MSG QUE CHEGOU ==>>', protocol)
             if (typeof protocol != 'undefined') {
