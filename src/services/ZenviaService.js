@@ -33,7 +33,7 @@ class ZenviaService {
 
       return result
     } catch (error) {
-      console.log('ERRO AO ENVIAR A MENSAGEM ==>> ZENVIA SERVICE ==>>', error)
+      console.log('ERRO AO ENVIAR A MENSAGEM ==>> ZENVIA SERVICE ==>>', error.response.config , '\nDATA', error.response.data)
       return { error: error }
     }
   }

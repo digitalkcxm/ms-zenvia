@@ -65,7 +65,7 @@ class MessageController {
       PELA COMPANY ==>> ${companyToken[0].name}`)
       return res.status(200).send({ send: true })
     } catch (error) {
-      console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error)
+      console.log('ERRO AO ENVIAR MENSAGE ==>> CONTROLLER ==>>', error.response)
       return res.status(500).send({ error: 'Erro ao enviar a mensagem.' })
     }
 
