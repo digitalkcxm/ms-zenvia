@@ -94,7 +94,7 @@ class MessageController {
       })
 
     } catch (error) {
-      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> CONTROLLER ==>>', error)
+      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> CONTROLLER')
     }
   }
 

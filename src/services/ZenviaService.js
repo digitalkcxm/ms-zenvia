@@ -48,7 +48,7 @@ class ZenviaService {
       return result.data.getSmsStatusResp
     } catch (error) {
       //console.log('ERRO AO ATUALIZAR STATUS ==>> ZENVIA SERVICE ==>>', error)
-      return { error: error }
+      return { error: 'Erro ao buscar status' }
     }
   }
 
