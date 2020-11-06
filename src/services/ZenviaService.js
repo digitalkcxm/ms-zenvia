@@ -47,7 +47,7 @@ class ZenviaService {
       const result = await instance.get(`/get-sms-status/${String(id)}`)
       return result.data.getSmsStatusResp
     } catch (error) {
-      console.log('ERRO AO ATUALIZAR STATUS ==>> ZENVIA SERVICE ==>>', error)
+      //console.log('ERRO AO ATUALIZAR STATUS ==>> ZENVIA SERVICE ==>>', error)
       return { error: error }
     }
   }
