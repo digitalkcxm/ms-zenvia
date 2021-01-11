@@ -126,6 +126,7 @@ class MessageController {
                   chat: {
                     id: protocol.id
                   },
+                  token: company[0].token,
                   channel: 'sms'
                 }
                 console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
