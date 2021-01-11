@@ -41,10 +41,6 @@ class ProtocolController {
         if (contact.error)
           return res.status(400).send({ error: contact.error })
 
-
-        const messageId = await messageModel.create(protocol.id_protocol, msg, 'Company')
-        if (messageId.error)
-          return res.status(400).send({ error: messageId.error })
         console.log('MESSAGE ID ==>>', messageId)
         const resultZenviaSend = await zenviaService.sendMessage(company[0], to, msg, messageId)
         if (resultZenviaSend.error)
@@ -54,6 +50,9 @@ class ProtocolController {
         if (protocol.error)
           return res.status(400).send({ error: protocol.error })
 
+        const messageId = await messageModel.create(protocol.id_protocol, msg, 'Company')
+        if (messageId.error)
+          return res.status(400).send({ error: messageId.error })
 
         const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
         if (statusMessage.error)

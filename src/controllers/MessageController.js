@@ -127,7 +127,8 @@ class MessageController {
                     id: protocol.id
                   },
                   token: company[0].token,
-                  channel: 'sms'
+                  channel: 'sms',
+                  phone: msg.mobile
                 }
                 console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
                 console.log('DADOS             ==>>', msgObj)
