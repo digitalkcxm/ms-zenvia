@@ -87,48 +87,6 @@ class MessageModel {
     }
   }
 
-  async getMessageStatus(idProtocol){
-    try {
-      const result = await database.raw(`
-      select sm.status_description as "status"
-      , m.id as "id_message"
-      from status_message sm
-      inner join message m  on sm.id_message  = m.id
-      inner join protocol p on m.id_protocol  = p.id
-      where m."source" = 'Company'
-      and p.id in (${idProtocol})
-      and m.id  = (select min(m1.id)
-              from message m1
-              inner join protocol p2 on m1.id_protocol = p2.id
-              where p2.id in (${idProtocol}))
-              limit 1;`)
-
-    return result.rows
-    } catch (err) {
-      console.log('ERRO AO BUSCAR STATUS ==>>', err)
-      return { error: 'Erro ao buscar status.' }
-    }
-  }
-
-  async statusByMessages(messages, protocols){
-    try {
-      const result = await database.raw(`
-      select sm.status_description as "status",
-      count('*') as "Total_Status"
-      from status_message sm
-      inner join message m  on sm.id_message  = m.id
-      inner join protocol p on m.id_protocol  = p.id
-      where m."source" = 'Company'
-      and p.id in (${protocols})
-      and m.id in (${messages})
-      group  by "status";`)
-
-    return result.rows
-    } catch (err) {
-      console.log('ERRO AO BUSCAR STATUS ==>>', err)
-      return { error: 'Erro ao buscar status.' }
-    }
-  }
 
   async saveStatusOnMessageTable(status, idMessage){
     try {

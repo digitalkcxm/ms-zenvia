@@ -98,24 +98,6 @@ class ProtocolModel {
     }
   }
 
-
-  async confirmIds(ids, token){
-    try {
-
-      const data = await database('protocol')
-      .select(
-        'protocol.id                    as id')
-        .leftJoin('company', 'company.id', 'protocol.id_company')
-        .where('company.token', token)
-        .whereRaw(`protocol.id in (${ids})`)
-
-      return data
-    } catch (err) {
-      console.log('ERRO AO CONFIRMAR IDS ==>>', err)
-      return { error: 'Erro ao buscar as mensagens.' }
-    }
-  }
-
 }
 
 module.exports = ProtocolModel
