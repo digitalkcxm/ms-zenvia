@@ -86,6 +86,21 @@ class MessageModel {
       return { error: 'Erro ao buscar as mensagens.' }
     }
   }
+
+
+  async saveStatusOnMessageTable(status, idMessage){
+    try {
+      return await database('message')
+      .update({status_zenvia: status})
+      .returning(['id'])
+      .where('id', idMessage)
+
+    } catch (err) {
+      console.log('ERRO AO SALVAR STATUS MESSAGE ==>>', err)
+      return { error: 'Erro ao buscar status.' }
+    }
+  }
+
 }
 
 module.exports = MessageModel

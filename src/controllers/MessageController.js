@@ -90,11 +90,13 @@ class MessageController {
           let statusUpdate = await statusMessageModel.update(zenviaData, message.id)
           if (statusUpdate.error)
             return
+
+          await messageModel.saveStatusOnMessageTable(zenviaData.statusDescription, message.id)
         })
       })
 
     } catch (error) {
-      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> CONTROLLER')
+      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>>', error)
     }
   }
 
