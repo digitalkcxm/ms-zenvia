@@ -90,13 +90,13 @@ class MessageController {
           let statusUpdate = await statusMessageModel.update(zenviaData, message.id)
           if (statusUpdate.error)
             return
-
           await messageModel.saveStatusOnMessageTable(zenviaData.statusDescription, message.id)
+
         })
       })
 
     } catch (error) {
-      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>>', error)
+      console.log('ERRO AO BUSCAR OS STATUS ZENVIA ==>> ', error)
     }
   }
 
@@ -110,7 +110,7 @@ class MessageController {
         let messages = await zenviaService.getNewMessages(actualCompany)
         if (messages != null && !messages.error) {
           console.log('MENSAGENS DA COMPANY ', actualCompany.name, ' CHEGARAM ==>>', messages)
-          if(!Array.isArray(messages))
+          if (!Array.isArray(messages))
             return
 
           messages.map(async (msg) => {
@@ -194,7 +194,6 @@ class MessageController {
       })
 
       const company = await companyModel.getByToken(req.headers.authorization)
-      console.log('COMPANY ', company[0].name ,' ENVIANDO CAMPANHA')
       if (company.length == 0)
         return res.status(400).send({ error: 'Não existem uma company para o token informado.' })
 
@@ -213,15 +212,15 @@ class MessageController {
         if (protocolCampanha.error)
           return res.status(400).send({ error: contact.error })
 
-          const messageId = await messageModel.create(protocolCampanha.id_protocol, actualMessage.text, 'Company')
+        const messageId = await messageModel.create(protocolCampanha.id_protocol, actualMessage.text, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-          const resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.text, messageId)
+        const resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.text, messageId)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 
-          const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+        const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
 
@@ -234,6 +233,84 @@ class MessageController {
       return res.status(500).send({ error: 'Houve um erro no servidor.' })
     }
   }
+
+  async getStatusMessages(req, res) {
+    try {
+      let company = await companyModel.getByToken(req.headers.authorization)
+      company = company[0]
+
+      //verifica se todos os protocolos passados são da mesma company do token passado
+      let idsFromCompanyToken = await this._confirmProtocolCompany(req.body.ids, company.token)
+
+      if (!idsFromCompanyToken.confirmed)
+        return res.status(400).send({ erro: `Os protocolos:  ${idsFromCompanyToken.idError} ,não pertencem a company indicada.` })
+
+
+      let totalProtocol = 0, idsMessages = [], idsMessagesErrors = []
+      for await (let protocol of idsFromCompanyToken.idsConfirmedArray) {
+        totalProtocol++
+        let statusAndMessageID = await messageModel.getMessageStatus(protocol)
+
+        if (!statusAndMessageID.length) {
+          idsMessagesErrors.push(protocol)
+
+        } else {
+          idsMessages.push(statusAndMessageID[0].id_message)
+        }
+      }
+
+      const resultStatusMessages = await messageModel.statusByMessages(idsMessages, idsFromCompanyToken.idsConfirmedArray)
+
+      for await (let status of resultStatusMessages) {
+        status.porcentagem = ((status.Total_Status * 100) / totalProtocol).toFixed(2)
+      }
+
+      const msgFinal = {}
+      msgFinal.status = resultStatusMessages
+      msgFinal.erros = idsMessagesErrors
+      msgFinal.total = totalProtocol
+
+
+      return res.status(200).send(msgFinal)
+
+    } catch (err) {
+      console.log('ERRO AO RECUPERAR STATUS ==>>', err)
+      return res.status(500).send({ error: 'Houve um erro no servidor.' })
+    }
+  }
+
+  async _confirmProtocolCompany(idsProtocols, token) {
+    try {
+
+      let confirmed = true
+      let idError = []
+      let idsConfirmedArray = []
+
+      const idsCheck = await protocolModel.confirmIds(idsProtocols, token)
+
+      const idsConfirmes = idsCheck.map(msg => msg.id)
+
+      idsProtocols.forEach(ids => {
+        if (!idsConfirmes.includes(ids)) {
+          confirmed = false
+          idError.push(ids)
+        } else {
+          idsConfirmedArray.push(ids)
+        }
+      })
+
+      if (!confirmed)
+        return { confirmed, idError }
+
+      return { confirmed, idsConfirmedArray }
+
+    } catch (err) {
+      console.log('ERRO AO CONFIRAS PROTOCOLOS ==>>', err)
+      return { error: 'Erro ao confirmar mensagens.' }
+
+    }
+  }
+
 }
 
 module.exports = MessageController

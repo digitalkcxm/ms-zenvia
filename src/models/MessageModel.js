@@ -100,7 +100,6 @@ class MessageModel {
       return { error: 'Erro ao buscar status.' }
     }
   }
-
 }
 
 module.exports = MessageModel
