@@ -8,6 +8,10 @@ module.exports = {
       user:     process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD
     },
+    pool: {
+      min: 0,
+      max: 5
+    },
     migrations: {
       directory: __dirname + '/src/config/database/migrations'
     },
@@ -55,6 +59,10 @@ module.exports = {
       database: process.env.DB_DATABASE,
       user:     process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD
+    },
+    pool: {
+      min: 0,
+      max: 5
     },
     migrations: {
       directory: __dirname + '/src/config/database/migrations'

@@ -1,4 +1,4 @@
-const elasticAPM = require('./elastic-apm')(process.env.APM_SERVICE_NAME, process.env.APM_SERVER_URL)
+// const elasticAPM = require('./elastic-apm')(process.env.APM_SERVICE_NAME, process.env.APM_SERVER_URL)
 
 const express = require('express')
 const validator = require('express-validator')
