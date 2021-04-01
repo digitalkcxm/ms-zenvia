@@ -125,6 +125,33 @@ class CompanyController {
       return res.status(500).send({ error: "Ocorreu um erro ao atualizar a company." })
     }
   }
+
+  async updateApi(req,res){
+    try {
+
+      const {name, token, callback, activated, zenvia_token} = req.body    
+      
+      const update = {}
+      
+      zenvia_token ? update.zenvia_token = zenvia_token : ''
+      update.name = name
+      update.callback = callback  
+      update.activated = activated
+
+      const company = await companyModel.getByToken(token)
+      if(company.error)
+        return res.status(500).send({error:company.error })
+
+      const up = await companyModel.update(company[0].id, update)
+      if(up.error)
+        return res.status(500).send({error:up.error })
+
+      return res.status(200).send(up)
+    } catch (error) {
+      console.log('ERRO AO ATUALIZAR COMPANY => CONTROLLER =>', error)
+      return res.status(500).send({ error: "Ocorreu um erro ao atualizar a company." })
+    }
+  }
 }
 
 module.exports = CompanyController
