@@ -4,7 +4,11 @@ const MessageController = require('../controllers/MessageController')
 
 const messageController = new MessageController()
 
-const status = new CronJob('0/10 * * * * *', () => {
- messageController.getNewMessages()
- messageController.getZenviaStatus()
-}, null, true)
+const getNewMessages = new CronJob('0/30 * * * * *', () => {
+    messageController.getNewMessages()
+   }, null, true)
+   
+   const getStatus = new CronJob('0/50 * * * * *', () => {
+       messageController.getZenviaStatus()
+   }, null, true)
+      

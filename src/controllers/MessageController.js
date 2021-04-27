@@ -107,15 +107,15 @@ class MessageController {
       activatedCompanies.map(async (actualCompany) => {
         let messages = await zenviaService.getNewMessages(actualCompany)
         if (messages != null && !messages.error) {
-          console.log('MENSAGENS DA COMPANY ', actualCompany.name, ' CHEGARAM ==>>', messages)
+
           if (!Array.isArray(messages))
             return
 
-          messages.map(async (msg) => {
+          messages.forEach(async (msg) => {
             let protocol, company, reply
+
             protocol = await protocolModel.getProtocolByPhone(msg.mobile)
-            console.log('PROTOCOLO REFERENTE A MSG QUE CHEGOU ==>>', protocol)
-            if (typeof protocol != 'undefined') {
+            if (protocol.length) {
               company = await protocolModel.getCompany(protocol.id)
 
               reply = await messageModel.insertReply(protocol.id, company[0].id, msg)
@@ -135,6 +135,27 @@ class MessageController {
                 webHook.sendMessage(company[0].callback, msgObj)
 
               }
+            } else {
+              //criar protocolo
+              const contactId = await contactModel.createContact(msg.mobile)
+
+              const protocolo = await protocolModel.create(actualCompany.id, contactId)
+              const saveMessage = await messageModel.create(protocolo.id_protocol, msg.body, 
+                'Customer', msg.mobileOperatorName)
+
+              let msgObj = {
+                body: msg.body,
+                chat: {
+                  id: protocolo.id_protocol
+                },
+                token: actualCompany.token,
+                channel: 'sms',
+                phone: msg.smsNumero
+              }
+              console.log('ENVIAR NO WEBHOOK INCOMING ==>>', actualCompany.callback)
+              console.log('DADOS             INCOMING==>>', msgObj)
+              webHook.sendMessage(actualCompany.callback, msgObj)
+
             }
 
           })

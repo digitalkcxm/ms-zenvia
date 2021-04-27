@@ -55,18 +55,11 @@ class ProtocolModel {
 
   async getProtocolByPhone(phone) {
     try {
-      const protocol = await database.raw(`
-      SELECT p.id,
-             p.closed,
-             c.phone,
-             co.name,
-             co.callback
-       from protocol p
-      inner join contact c on p.id_contact = c.id
-      inner join company co on p.id_company = co.id
-      where p.closed = false and c.phone = '${phone}'`)
+      const p = await database('protocol').select('protocol.id')
+      .innerJoin('contact', 'protocol.id_contact', 'contact.id')
+      .where({closed:false})
 
-      return protocol.rows[0]
+      return p
     } catch (error) {
       console.log('ERRO AO BUSCAR POR PROTOCOLO PELO TELEFONE => MODEL =>', error)
       return { error: 'Ocorreu um erro ao recuperar o protocolo a partir do telefone.' }
