@@ -1,7 +1,5 @@
 const axios = require('axios')
-const { timeout } = require('cron')
 const moment = require('moment')
-
 class ZenviaService {
 
   async sendMessage(company, to, msg, msgId) {

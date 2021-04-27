@@ -36,8 +36,7 @@ class StatusMessageModel {
       status.status_description = obj.statusDescription
       status.detail_code        = obj.detailCode
       status.detail_description = obj.detailDescription
-      status.updated_at         = moment().format()
-
+      
       const result = await database('status_message').returning(['id'])
         .update(status).where({ id_message })
 

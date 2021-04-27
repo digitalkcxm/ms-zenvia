@@ -1,18 +1,25 @@
 const moment = require('moment')
 const database = require('../config/database/database')
+const { v4 } = require('uuid')
 
 class MessageModel {
 
   async create(id_protocol, msg,
     source, mobile_operator_name = '') {
     try {
-      const result = await database('message').returning(['id']).insert({
-        id_protocol, msg,
-        source, mobile_operator_name,
-        created_at: moment().format(), updated_at: moment().format()
-      })
+      
+      const obj = {
+        id_protocol,
+        msg,
+        source,
+        mobile_operator_name
+      }
+      obj.id_plataforma_zenvia = v4()
+
+
+      const result = await database('message').returning(['id','id_plataforma_zenvia']).insert(obj)
       if (result)
-        return result[0].id
+        return result[0]
 
       return { error: 'Erro ao criar a mensagem.' }
     } catch (error) {
@@ -24,9 +31,11 @@ class MessageModel {
   async getMessagesWithoutReceived() {
     try {
 
-      const messages = await database('message').select('message.id')
+      const messages = await database('message').select(['message.id', 'message.id_plataforma_zenvia'])
         .leftJoin('status_message', 'message.id', 'status_message.id_message')
         .whereNotIn('status_message.detail_code', [120])
+        .where({source: 'Company'})
+        .whereNotNull('message.id_plataforma_zenvia')
 
       return messages
     } catch (error) {
@@ -94,7 +103,6 @@ class MessageModel {
       .update({status_zenvia: status})
       .returning(['id'])
       .where('id', idMessage)
-
     } catch (err) {
       console.log('ERRO AO SALVAR STATUS MESSAGE ==>>', err)
       return { error: 'Erro ao buscar status.' }

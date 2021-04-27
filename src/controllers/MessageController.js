@@ -84,12 +84,10 @@ class MessageController {
           return { error: allMessagesWithoutReceived.error }
 
         allMessagesWithoutReceived.map(async (message) => {
-          let zenviaData = await zenviaService.getStatusById(message.id, actualCompany)
+          let zenviaData = await zenviaService.getStatusById(message.id_plataforma_zenvia, actualCompany)
           if (zenviaData.error)
             return
-          let statusUpdate = await statusMessageModel.update(zenviaData, message.id)
-          if (statusUpdate.error)
-            return
+          await statusMessageModel.update(zenviaData, message.id)
           await messageModel.saveStatusOnMessageTable(zenviaData.statusDescription, message.id)
 
         })
