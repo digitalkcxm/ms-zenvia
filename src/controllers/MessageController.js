@@ -54,7 +54,7 @@ class MessageController {
       if (messageId.error)
         return res.status(400).send({ error: messageId.error })
 
-      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg.id_plataforma_zenvia)
+      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, msg.id_plataforma_zenvia)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
 
