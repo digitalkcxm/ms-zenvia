@@ -54,11 +54,11 @@ class MessageController {
       if (messageId.error)
         return res.status(400).send({ error: messageId.error })
 
-      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, messageId)
+      const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, msg.id_plataforma_zenvia)
       if (resultZenviaSend.error)
         return res.status(400).send({ error: resultZenviaSend.error })
 
-      const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+      const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId.id)
       if (statusMessage.error)
         return res.status(400).send({ error: statusMessage.error })
       console.log(`ENVIO DA MSG ==>> ${msg} ==>> para o numero ${phoneContact[0].phone}
@@ -111,11 +111,17 @@ class MessageController {
           if (!Array.isArray(messages))
             return
 
-          messages.forEach(async (msg) => {
+          messages.forEach(async (msg) => {          
+
+            const alreadyInserted = await messageModel.messageAlreadyInserted(msg)
+            if (alreadyInserted)
+              return
+
             let protocol, company, reply
 
             protocol = await protocolModel.getProtocolByPhone(msg.mobile)
             if (protocol.length) {
+              protocol = protocol[0]
               company = await protocolModel.getCompany(protocol.id)
 
               reply = await messageModel.insertReply(protocol.id, company[0].id, msg)
@@ -128,7 +134,7 @@ class MessageController {
                   },
                   token: company[0].token,
                   channel: 'sms',
-                  phone: msg.mobile
+                  phone: msg.phone
                 }
                 console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
                 console.log('DADOS             ==>>', msgObj)
@@ -150,7 +156,7 @@ class MessageController {
                 },
                 token: actualCompany.token,
                 channel: 'sms',
-                phone: msg.smsNumero
+                phone: msg.phone
               }
               console.log('ENVIAR NO WEBHOOK INCOMING ==>>', actualCompany.callback)
               console.log('DADOS             INCOMING==>>', msgObj)

@@ -108,6 +108,22 @@ class MessageModel {
       return { error: 'Erro ao buscar status.' }
     }
   }
+
+  async messageAlreadyInserted(obj) {
+    try {
+      const m = await database('message')
+      .select('message.id')
+      .where({id_zenvia: obj.id})
+      .where({source: 'Customer'})
+      .where({msg: obj.body})
+      return m.length ? true : false
+
+    } catch (error) {
+      console.log('ERRO AO BUSCAR POR MENSAGEM JÁ INSERIDA => MODEL =>', error)
+      return true
+    }
+  }
+
 }
 
 module.exports = MessageModel
