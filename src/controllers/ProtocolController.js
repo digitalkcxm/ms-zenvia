@@ -49,13 +49,13 @@ class ProtocolController {
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-        const resultZenviaSend = await zenviaService.sendMessage(company[0], to, msg, messageId)
+        const resultZenviaSend = await zenviaService.sendMessage(company[0], to, msg, messageId.id_plataforma_zenvia)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: 'Erro ao mandar SMS na Zenvia' })
 
 
 
-        const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+        const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId.id)
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
         console.log('CRIACAO DO PROTOCOLO ==>>', { protocol_id: protocol.id_protocol })
