@@ -134,7 +134,7 @@ class MessageController {
                   },
                   token: company[0].token,
                   channel: 'sms',
-                  phone: msg.phone
+                  phone: msg.mobile
                 }
                 console.log('ENVIAR NO WEBHOOK ==>>', company[0].callback)
                 console.log('DADOS             ==>>', msgObj)
@@ -156,7 +156,7 @@ class MessageController {
                 },
                 token: actualCompany.token,
                 channel: 'sms',
-                phone: msg.phone
+                phone: msg.mobile
               }
               console.log('ENVIAR NO WEBHOOK INCOMING ==>>', actualCompany.callback)
               console.log('DADOS             INCOMING==>>', msgObj)
