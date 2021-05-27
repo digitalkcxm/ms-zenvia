@@ -237,15 +237,15 @@ class MessageController {
         if (protocolCampanha.error)
           return res.status(400).send({ error: contact.error })
 
-        const messageId = await messageModel.create(protocolCampanha.id_protocol, actualMessage.text, 'Company')
+        const messageId = await messageModel.create(protocolCampanha.id_protocol, actualMessage.msg, 'Company')
         if (messageId.error)
           return res.status(400).send({ error: messageId.error })
 
-        const resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.text, messageId)
+        const resultZenviaSend = await zenviaService.sendMessage(company[0], actualMessage.to, actualMessage.msg, messageId.id_plataforma_zenvia)
         if (resultZenviaSend.error)
           return res.status(400).send({ error: resultZenviaSend.error })
 
-        const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId)
+        const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId.id)
         if (statusMessage.error)
           return res.status(400).send({ error: statusMessage.error })
 
