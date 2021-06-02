@@ -58,6 +58,7 @@ class ProtocolModel {
       const p = await database('protocol').select('protocol.id')
       .innerJoin('contact', 'protocol.id_contact', 'contact.id')
       .where({closed:false})
+      .andWhere('c.phone', phone)
 
       return p
     } catch (error) {
