@@ -53,12 +53,14 @@ class ProtocolModel {
     }
   }
 
-  async getProtocolByPhone(phone) {
+  async getProtocolByPhone(phone, company) {
     try {
       const p = await database('protocol').select('protocol.id')
       .innerJoin('contact', 'protocol.id_contact', 'contact.id')
+      .innerJoin('company', 'protocol.id_company', 'company.id')
       .where({closed:false})
-      .andWhere('c.phone', phone)
+      .andWhere('contact.phone', phone)
+      .andWhere('company.token', company)
 
       return p
     } catch (error) {
