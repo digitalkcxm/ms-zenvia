@@ -119,7 +119,7 @@ class MessageController {
 
             let protocol, company, reply
 
-            protocol = await protocolModel.getProtocolByPhone(msg.mobile)
+            protocol = await protocolModel.getProtocolByPhone(msg.mobile, actualCompany.token)
             if (protocol.length) {
               protocol = protocol[0]
               company = await protocolModel.getCompany(protocol.id)
