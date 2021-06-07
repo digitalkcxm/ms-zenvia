@@ -8,7 +8,7 @@ const getNewMessages = new CronJob('0/30 * * * * *', () => {
     messageController.getNewMessages()
    }, null, true)
    
-   const getStatus = new CronJob('0/50 * * * * *', () => {
+   const getStatus = new CronJob('* 5 * * * *', () => {
        messageController.getZenviaStatus()
    }, null, true)
       

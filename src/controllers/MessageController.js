@@ -229,6 +229,10 @@ class MessageController {
       const messagesToSend = req.body.messages
 
       const testArray = await Promise.all(messagesToSend.map(async actualMessage => {
+
+        if (actualMessage.msg.length > 160)
+          return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
+
         const contact = await contactModel.createContact(actualMessage.to)
         if (contact.error)
           return res.status(400).send({ error: contact.error })
