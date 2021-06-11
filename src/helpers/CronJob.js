@@ -4,7 +4,7 @@ const MessageController = require('../controllers/MessageController')
 
 const messageController = new MessageController()
 
-const getNewMessages = new CronJob('0/30 * * * * *', () => {
+const getNewMessages = new CronJob('2 * * * * *', () => {
     messageController.getNewMessages()
    }, null, true)
    

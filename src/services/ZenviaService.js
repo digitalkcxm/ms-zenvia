@@ -52,7 +52,7 @@ class ZenviaService {
 
   async getNewMessages(company) {
     try {
-      let startDate = moment().subtract("5", "days").format('YYYY/MM/DD HH:mm:ss')
+      let startDate = moment().subtract("1", "days").format('YYYY/MM/DD HH:mm:ss')
       startDate = startDate.replace(' ', 'T')
       startDate = startDate.replace('/', '-')
       startDate = startDate.replace('/', '-')
