@@ -117,16 +117,18 @@ class MessageModel {
       const m = await database('message')
       .select('message.id')
       .innerJoin('protocol','protocol.id' , 'message.id_protocol')
-      .innerJoin('company','protocol.id-company', 'company.id')
+      .innerJoin('company','protocol.id_company', 'company.id')
       .where({id_zenvia: obj.id})
       .where({source: 'Customer'})
       .where({msg: obj.body})
-      .where('created_at', '>=', dateSearch)
+      .where('message.created_at', '>=', dateSearch)
       .where('company.token', token)
+     
       
-      //where company
+      //se continuar dando problemas:
       //indice 
-      //explain/analyse postgresql : EXPLAIN ANALYSE
+      //redis
+      
       return m.length ? true : false
 
     } catch (error) {
