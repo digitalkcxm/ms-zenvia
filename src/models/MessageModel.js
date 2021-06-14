@@ -109,13 +109,24 @@ class MessageModel {
     }
   }
 
-  async messageAlreadyInserted(obj) {
+  async messageAlreadyInserted(obj, token) {
     try {
+
+      const dateSearch = moment().subtract("1", "days").format('YYYY/MM/DD HH:mm:ss')
+
       const m = await database('message')
       .select('message.id')
+      .innerJoin('protocol','protocol.id' , 'message.id_protocol')
+      .innerJoin('company','protocol.id-company', 'company.id')
       .where({id_zenvia: obj.id})
       .where({source: 'Customer'})
       .where({msg: obj.body})
+      .where('created_at', '>=', dateSearch)
+      .where('company.token', token)
+      
+      //where company
+      //indice 
+      //explain/analyse postgresql : EXPLAIN ANALYSE
       return m.length ? true : false
 
     } catch (error) {

@@ -113,7 +113,7 @@ class MessageController {
 
           messages.forEach(async (msg) => {          
 
-            const alreadyInserted = await messageModel.messageAlreadyInserted(msg)
+            const alreadyInserted = await messageModel.messageAlreadyInserted(msg, actualCompany.token)
             if (alreadyInserted)
               return
 
