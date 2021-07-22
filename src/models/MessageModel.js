@@ -7,7 +7,7 @@ class MessageModel {
   async create(id_protocol, msg,
     source, mobile_operator_name = '') {
     try {
-      
+
       const obj = {
         id_protocol,
         msg,
@@ -29,13 +29,15 @@ class MessageModel {
   }
 
   async getMessagesWithoutReceived() {
-    try {
+  try {
+     const dateSearch = moment().subtract("1", "days").format('YYYY/MM/DD HH:mm:ss')
 
       const messages = await database('message').select(['message.id', 'message.id_plataforma_zenvia'])
         .leftJoin('status_message', 'message.id', 'status_message.id_message')
         .whereNotIn('status_message.detail_code', [120])
         .where({source: 'Company'})
         .whereNotNull('message.id_plataforma_zenvia')
+        .andWhere('message.created_at', '>=', dateSearch)
 
       return messages
     } catch (error) {
@@ -123,12 +125,12 @@ class MessageModel {
       .where({msg: obj.body})
       .where('message.created_at', '>=', dateSearch)
       .where('company.token', token)
-     
-      
+
+
       //se continuar dando problemas:
-      //indice 
+      //indice
       //redis
-      
+
       return m.length ? true : false
 
     } catch (error) {
