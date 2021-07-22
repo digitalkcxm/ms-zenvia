@@ -55,7 +55,7 @@ class MessageController {
         return res.status(400).send({ error: messageId.error })
 
       const resultZenviaSend = await zenviaService.sendMessage(companyToken[0], phoneContact[0].phone, msg, msg.id_plataforma_zenvia)
-      if (resultZenviaSend.error)
+      if (resultZenviaSend.error || resultZenviaSend.data.sendSmsResponse.statusDescription === 'Error')
         return res.status(400).send({ error: resultZenviaSend.error })
 
       const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId.id)
@@ -111,9 +111,9 @@ class MessageController {
           if (!Array.isArray(messages))
             return
 
-          messages.forEach(async (msg) => {          
+          messages.forEach(async (msg) => {
 
-            const alreadyInserted = await messageModel.messageAlreadyInserted(msg)
+            const alreadyInserted = await messageModel.messageAlreadyInserted(msg, actualCompany.token)
             if (alreadyInserted)
               return
 
@@ -146,7 +146,7 @@ class MessageController {
               const contactId = await contactModel.createContact(msg.mobile)
 
               const protocolo = await protocolModel.create(actualCompany.id, contactId)
-              const saveMessage = await messageModel.create(protocolo.id_protocol, msg.body, 
+              const saveMessage = await messageModel.create(protocolo.id_protocol, msg.body,
                 'Customer', msg.mobileOperatorName)
 
               let msgObj = {

@@ -52,26 +52,15 @@ class ZenviaService {
 
   async getNewMessages(company) {
     try {
-      let startDate = moment().subtract("1", "days").format('YYYY/MM/DD HH:mm:ss')
-      startDate = startDate.replace(' ', 'T')
-      startDate = startDate.replace('/', '-')
-      startDate = startDate.replace('/', '-')
-
-      let actualDate = moment().format('YYYY/MM/DD HH:mm:ss')
-      actualDate = actualDate.replace(' ', 'T')
-      actualDate = actualDate.replace('/', '-')
-      actualDate = actualDate.replace('/', '-')
-
       const instance = await this._istance(company.zenvia_token)
       if (instance.error)
         return instance.error
 
-      const resultNewMessages = await instance.get(`/received/search/${startDate}/${actualDate}`)
-
+      const resultNewMessages = await instance.post(`/received/list`)
       const allMessages = resultNewMessages.data.receivedResponse.receivedMessages
       return allMessages
     } catch (error) {
-      //console.log('ERRO AO BUSCAR NOVAS MENSAGENS ==>> ZENVIA SERVICE ==>>', error)
+      console.log('ERRO AO BUSCAR NOVAS MENSAGENS ==>> ZENVIA SERVICE ==>>', error)
       return { error: 'Erro ao buscar novas mensagens' }
     }
   }
