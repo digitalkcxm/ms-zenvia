@@ -34,8 +34,8 @@ class ProtocolController {
         if (to.substr(0, 2) != '55')
           to = '55' + to
 
-        if (msg.length > 160)
-          return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
+        //if (msg.length > 160)
+        //  return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
 
         const contact = await contactModel.createContact(to)
         if (contact.error)
@@ -50,6 +50,7 @@ class ProtocolController {
           return res.status(400).send({ error: messageId.error })
 
         const resultZenviaSend = await zenviaService.sendMessage(company[0], to, msg, messageId.id_plataforma_zenvia)
+        console.log('RESULT SEND ZENVIA =>>', resultZenviaSend)
         if (resultZenviaSend.error || resultZenviaSend.data.sendSmsResponse.statusDescription === 'Error')
           return res.status(400).send({ error: 'Houve um erro ao tentar acionar o cliente.' })
         const statusMessage = await statusMessageModel.create(resultZenviaSend.data, messageId.id)
