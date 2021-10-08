@@ -32,8 +32,8 @@ class MessageController {
       if (companyToken.error)
         return res.status(400).send({ error: companyToken.error })
 
-      if (msg.length > 159)
-        return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
+      //if (msg.length > 159)
+      //  return res.status(400).send({ error: 'O texto da mensagem deve ser menor que 160 caracteres' })
 
       const protocol = await protocolModel.getById(req.body.id_protocol)
       if (protocol.error)
@@ -103,7 +103,7 @@ class MessageController {
       const allCompanies = await companyModel.getAll()
 
       const activatedCompanies = allCompanies.filter(company => company.activated)
-
+      activatedCompanies = activatedCompanies.map((cp) => {if(cp.aggregated_id) return cp})
       activatedCompanies.map(async (actualCompany) => {
         let messages = await zenviaService.getNewMessages(actualCompany)
         if (messages != null && !messages.error) {
