@@ -54,7 +54,7 @@ class CompanyModel{
   async create(obj){
     try {
       const companyCreated = await database('company')
-      .returning(['id', 'name', 'callback', 'token', 'zenvia_token', 'aggregated_id', 'activated', 'created_at' ])
+      .returning(['id', 'name', 'callback', 'token', 'zenvia_token', 'aggregated_id', 'activated', 'created_at', 'account', 'password' ])
       .insert( obj )
       return companyCreated
     } catch (error) {

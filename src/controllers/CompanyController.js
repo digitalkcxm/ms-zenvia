@@ -55,25 +55,28 @@ class CompanyController {
 
     if (req.validationErrors())
       return res.status(400).send({ error: req.validationErrors() })
-
+          
     try {
-
+        
       const obj = {}
       const date = moment().format()
-
+      
       const buff = Buffer.from(`${req.body.account}:${req.body.password}`, 'utf-8')
       const base64 = buff.toString('base64')
-
+      
       obj.name = req.body.name
       obj.callback = req.body.callback
       obj.zenvia_token = `Basic ${base64}`
-      obj.aggregated_id = req.body.aggregated_id
+      if (req.body.aggregated_id) obj.aggregated_id = req.body.aggregated_id
       let tokenHash = obj.name + date
       obj.token = hash({ foo: tokenHash })
+      obj.account = req.body.account
+      obj.password = req.body.password
       obj.created_at = date
       obj.updated_at = date
-
+      
       const nameAlreadyExists = await companyModel.getByName(obj.name)
+
       if (nameAlreadyExists[0])
         return res.status(400).send({ error: 'Já existe uma company com este nome' })
 
@@ -81,9 +84,9 @@ class CompanyController {
 
       if (companyCreated.error)
         return res.status(400).send({ error: companyCreated.error })
-
+      
       companyCreated[0].created_at = moment(companyCreated[0].created_at).format('DD/MM/YYYY HH:mm')
-      console.log('CRIAÇÃO DA COMPANY ==>>', companyCreated[0])
+      console.log('CRIAÇÃO DA COMPANY ==>>', companyCreated[0])  
       return res.status(201).send(companyCreated[0])
     } catch (error) {
       console.log('ERRO AO CRIAR COMPANY => CONTROLLER =>', error)

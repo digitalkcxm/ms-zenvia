@@ -1,18 +1,18 @@
 {
   "name": "ms-zenvia",
   "version": "1.0.0",
-  "description": "",
+  "description": "Micro serviço construido para realizar o envio de sms com a plataforma da Zenvia",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "pretest": "NODE_ENV=testing node __tests__/config/database.js",
     "test": "NODE_ENV=testing jest --detectOpenHandles --runInBand",
-    "migrate:latest": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
-    "seed:run": "./node_modules/.bin/run.env ./node_modules/.bin/knex seed:run",
+    "migrate:latest": "run.env ./node_modules/.bin/knex migrate:latest",
+    "seed:run": "run.env ./node_modules/.bin/knex seed:run",
     "testmigrate:latest": "NODE_ENV=testing ./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest",
-    "migrate:rollback": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:rollback",
-    "migrate:make": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:make"
+    "migrate:rollback": "run.env ./node_modules/.bin/knex migrate:rollback",
+    "migrate:make": "run.env ./node_modules/.bin/knex migrate:make"
   },
   "keywords": [],
   "author": "Vitor Gomes",
@@ -42,5 +42,9 @@
     "run.env": "^1.1.0",
     "save": "^2.4.0",
     "uuid": "^3.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:digitalk1/backend/microservicos/mszenvia.git"
   }
 }
