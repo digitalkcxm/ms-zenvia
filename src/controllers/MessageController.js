@@ -103,7 +103,6 @@ class MessageController {
       const allCompanies = await companyModel.getAll()
 
       let activatedCompanies = allCompanies.filter(company => company.activated)
-      activatedCompanies = activatedCompanies.map((cp) => {if(cp.aggregated_id) return cp})
       activatedCompanies.map(async (actualCompany) => {
         let messages = await zenviaService.getNewMessages(actualCompany)
         if (messages != null && !messages.error) {
