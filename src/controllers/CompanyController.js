@@ -107,11 +107,16 @@ class CompanyController {
       const obj = {}
       const date = moment().format()
 
+      const buff = Buffer.from(`${req.body.account}:${req.body.password}`, 'utf-8')
+      const base64 = buff.toString('base64')
+      
       req.body.name ? obj.name = req.body.name : ''
       req.body.callback ? obj.callback = req.body.callback : ''
       typeof req.body.activated == 'boolean' ? obj.activated = req.body.activated : ''
       obj.updated_at = date
-      obj.zenvia_token = req.body.zenvia_token
+      obj.zenvia_token = `Basic ${base64}`
+      obj.account = req.body.account
+      obj.password = req.body.password
       obj.aggregated_id = req.body.aggregated_id
 
       const nameAlreadyExists = await companyModel.getByName(obj.name)
