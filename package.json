@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "pretest": "NODE_ENV=testing node __tests__/config/database.js",
+    "pretest": "echo \"Error: no test specified\"",
     "test": "echo \"Error: no test specified\"",
     "migrate:latest": "run.env ./node_modules/.bin/knex migrate:latest",
     "seed:run": "run.env ./node_modules/.bin/knex seed:run",
