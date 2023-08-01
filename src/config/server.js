@@ -1,5 +1,4 @@
-// const elasticAPM = require('./elastic-apm')(process.env.APM_SERVICE_NAME, process.env.APM_SERVER_URL)
-
+const tracing = require('./elastic-apm')
 const express = require('express')
 const validator = require('express-validator')
 const bodyParser = require('body-parser')
@@ -14,7 +13,7 @@ app.use(bodyParser.urlencoded({limit: '250mb', extended: true}))
 app.use(validator())
 app.use((req, res, next) => next())
 
-routes(app)
+routes(app, tracing)
 
 if(process.env.NODE_ENV !== 'testing'){
   app.listen(process.env.PORT, () => console.log(`Server running in port ${ process.env.PORT }`))
