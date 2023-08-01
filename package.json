@@ -44,8 +44,5 @@
     "save": "^2.4.0",
     "uuid": "^3.4.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@gitlab.com:digitalk1/backend/microservicos/mszenvia.git"
-  }
+
 }
