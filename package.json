@@ -1,10 +1,11 @@
 {
   "name": "ms-zenvia",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Micro serviço construido para realizar o envio de sms com a plataforma da Zenvia",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
+    "start:prod": "node src/index.js",
     "dev": "nodemon src/index.js",
     "pretest": "echo \"Error: no test specified\"",
     "test": "echo \"Error: no test specified\"",
